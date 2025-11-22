@@ -1,4 +1,4 @@
-<section class="ragnaroks-lobby-poll-manager">
+<section class="rnk-lobby-poll-manager">
   <header>
     <h2>Polls & Ready Checks</h2>
     <p>Launch quick votes while players wait in the lobby and capture the results for reference.</p>
@@ -12,7 +12,7 @@
           {{#each options}}
             <li>
               <span class="label">{{this.text}}</span>
-              <span class="meta">{{this.votes}} vote{{#unless (eq this.votes 1)}}s{{/unless}} · {{this.percentage}}%</span>
+              <span class="meta">{{this.votes}} vote{{#unless (eq this.votes 1)}}s{{/unless}} Â· {{this.percentage}}%</span>
               <span class="progress" style="--progress: {{this.percentage}};"></span>
             </li>
           {{/each}}
@@ -68,3 +68,5 @@
     {{/if}}
   </section>
 </section>
+
+

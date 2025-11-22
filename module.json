@@ -1,6 +1,6 @@
-{
-  "id": "ragnaroks-lobby",
-  "title": "RagNarok's Lobby",
+﻿{
+  "id": "rnk-lobby",
+  "title": "RNK Lobby",
   "description": "A system-agnostic maintenance lobby module that prevents players from accessing the world while the GM performs maintenance. Players are presented with a full-screen overlay message while the lobby is active. Features countdown timers, customizable appearances, chat monitoring, and more!",
   "version": "1.0.0",
   "compatibility": {
@@ -9,7 +9,7 @@
   },
   "authors": [
     {
-      "name": "RagNarok",
+      "name": "RNK",
       "url": "https://github.com/Odinn-1982"
     }
   ],
@@ -29,10 +29,13 @@
   ],
   "socket": true,
   "packs": [],
-  "url": "https://github.com/Odinn-1982/ragnaroks-lobby",
-  "manifest": "https://github.com/Odinn-1982/ragnaroks-lobby/releases/download/1.0.0/module.json",
-  "download": "https://github.com/Odinn-1982/ragnaroks-lobby/releases/download/1.0.0/ragnaroks-lobby-1.0.0.zip",
+  "url": "https://github.com/Odinn-1982/rnk-lobby",
+  "manifest": "https://github.com/Odinn-1982/rnk-lobby/releases/download/1.0.0/module.json",
+  "download": "https://github.com/Odinn-1982/rnk-lobby/releases/download/1.0.0/rnk-lobby-1.0.0.zip",
   "readme": "README.md",
   "changelog": "CHANGELOG.md",
-  "bugs": "https://github.com/Odinn-1982/ragnaroks-lobby/issues"
+  "bugs": "https://github.com/Odinn-1982/rnk-lobby/issues"
 }
+
+
+

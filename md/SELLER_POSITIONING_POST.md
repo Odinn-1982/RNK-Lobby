@@ -1,6 +1,6 @@
-# RagNarok's Lobby - "Rock Solid" Release Post
+﻿# RNK Lobby - "Rock Solid" Release Post
 
-## 🎭 THE ULTIMATE PITCH - The Perfect Blend
+## ðŸŽ­ THE ULTIMATE PITCH - The Perfect Blend
 
 ---
 
@@ -12,7 +12,7 @@
 
 Hey Foundry Community,
 
-Today I'm releasing **RagNarok's Lobby** — a comprehensive maintenance mode system — completely free. No paywall. No premium features locked away. No compromises. Just pure, production-grade software with my name on it.
+Today I'm releasing **RNK Lobby** â€” a comprehensive maintenance mode system â€” completely free. No paywall. No premium features locked away. No compromises. Just pure, production-grade software with my name on it.
 
 **I want to be really honest about why I'm doing this.**
 
@@ -20,14 +20,14 @@ I could charge for this. It's polished. It's feature-rich. It's enterprise-grade
 
 **Here's what I want you to know about me:**
 
-I'm someone who delivers rock-solid code. I'm an innovator who doesn't copy — I solve problems in fresh ways. I'm obsessive about quality. And I'm betting on myself by proving it upfront.
+I'm someone who delivers rock-solid code. I'm an innovator who doesn't copy â€” I solve problems in fresh ways. I'm obsessive about quality. And I'm betting on myself by proving it upfront.
 
 When you use this module, you'll see:
-- ✨ **Professional code quality** - Clean architecture, proper error handling, comprehensive testing
-- 🎨 **Thoughtful design** - Every detail considered, from animation timing to accessibility
-- ⚙️ **Real problem-solving** - Features like presets, analytics, polls, and chat monitoring that actually matter
-- 📊 **Enterprise thinking** - Socket synchronization, performance optimization, security-first approach
-- 📚 **Attention to detail** - Documentation that's actually good, code that's maintainable, features that work
+- âœ¨ **Professional code quality** - Clean architecture, proper error handling, comprehensive testing
+- ðŸŽ¨ **Thoughtful design** - Every detail considered, from animation timing to accessibility
+- âš™ï¸ **Real problem-solving** - Features like presets, analytics, polls, and chat monitoring that actually matter
+- ðŸ“Š **Enterprise thinking** - Socket synchronization, performance optimization, security-first approach
+- ðŸ“š **Attention to detail** - Documentation that's actually good, code that's maintainable, features that work
 
 **Why is this free?**
 
@@ -43,7 +43,7 @@ This isn't v0.5 beta. This is v1.0 from day one. Shipping done right.
 
 **The Business Strategy Here?**
 
-I'm not chasing short-term profit. I'm building long-term reputation. Next time I release something, you'll remember this. You'll think, "RagNarok doesn't cut corners. This will be solid." And that trust? That's worth way more than a quick sale.
+I'm not chasing short-term profit. I'm building long-term reputation. Next time I release something, you'll remember this. You'll think, "RNK doesn't cut corners. This will be solid." And that trust? That's worth way more than a quick sale.
 
 You can't fake quality. But you *can* demonstrate it. That's exactly what I'm doing.
 
@@ -52,14 +52,14 @@ You can't fake quality. But you *can* demonstrate it. That's exactly what I'm do
 If you use this module and think "this person knows what they're doing," that's the entire point. Because I do. And I want you to know it.
 
 **Get It:**
-- 📥 [Foundry Module Browser](https://foundryvtt.com/packages/ragnaroks-lobby)
-- 🔗 [GitHub - Read the Code](https://github.com/Odinn-1982/ragnaroks-lobby)
-- 📖 [Full Documentation](https://github.com/Odinn-1982/ragnaroks-lobby)
+- ðŸ“¥ [Foundry Module Browser](https://foundryvtt.com/packages/rnk-lobby)
+- ðŸ”— [GitHub - Read the Code](https://github.com/Odinn-1982/rnk-lobby)
+- ðŸ“– [Full Documentation](https://github.com/Odinn-1982/rnk-lobby)
 
 **Want to Support Development?**
-- ☕ [Buy Me a Coffee](https://buymeacoffee.com/ragnarokscodex)
-- 💜 [Patreon](https://patreon.com/RagNaroks)
-- 🎮 [Join RagNarok's Codex Discord](https://discord.gg/ragnarokscodex)
+- â˜• [Buy Me a Coffee](https://buymeacoffee.com/RNKcodex)
+- ðŸ’œ [Patreon](https://patreon.com/RNK)
+- ðŸŽ® [Join RNK Codex Discord](https://discord.gg/RNKcodex)
 
 Support is completely optional. The module is free forever.
 
@@ -71,7 +71,7 @@ Let me know what you think. Report bugs. Suggest features. Engage with the commu
 
 This is how you build a name on a platform: Not with hype. With results. With consistency. With trust.
 
-— RagNarok
+â€” RNK
 
 ---
 
@@ -83,7 +83,7 @@ This is how you build a name on a platform: Not with hype. With results. With co
 
 Hey Foundry Community,
 
-Today I'm releasing **RagNarok's Lobby** completely free to everyone. No payment wall. No premium features locked behind a paywall. No ads. No tracking. Just pure, high-quality code.
+Today I'm releasing **RNK Lobby** completely free to everyone. No payment wall. No premium features locked behind a paywall. No ads. No tracking. Just pure, high-quality code.
 
 **Why?**
 
@@ -94,13 +94,13 @@ This isn't a loss leader or a marketing gimmick. This is me saying: *"Look at wh
 **What You're Getting:**
 
 A enterprise-grade maintenance mode system that:
-- ✨ Works flawlessly across all Foundry game systems
-- 🎨 Delivers professional UI/UX with smooth animations
-- ⚙️ Handles real-world edge cases (socket failures, browser compatibility, performance)
-- 📊 Includes advanced features (presets, analytics, chat monitoring, polls)
-- 🔒 Prioritizes security and player protection
-- 📚 Comes with comprehensive documentation
-- 🎯 Is maintainable, scalable, and extensible
+- âœ¨ Works flawlessly across all Foundry game systems
+- ðŸŽ¨ Delivers professional UI/UX with smooth animations
+- âš™ï¸ Handles real-world edge cases (socket failures, browser compatibility, performance)
+- ðŸ“Š Includes advanced features (presets, analytics, chat monitoring, polls)
+- ðŸ”’ Prioritizes security and player protection
+- ðŸ“š Comes with comprehensive documentation
+- ðŸŽ¯ Is maintainable, scalable, and extensible
 
 **This is v1.0 from day one.** Not a beta. Not a rough draft. This is what shipping looks like when you care about quality.
 
@@ -115,14 +115,14 @@ If you use this module, enjoy it, and think "this person knows what they're doin
 And if you want to support ongoing development? I've got Patreon and Buy Me a Coffee links. But that's purely optional. The module is free. Forever.
 
 **Get It:**
-- 📥 [Foundry Module Browser](https://foundryvtt.com/packages/)
-- 🔗 [GitHub](https://github.com/Odinn-1982/ragnaroks-lobby)
-- ☕ [Support me](https://buymeacoffee.com/ragnarokscodex)
-- 💜 [Patreon](https://patreon.com/RagNaroks)
+- ðŸ“¥ [Foundry Module Browser](https://foundryvtt.com/packages/)
+- ðŸ”— [GitHub](https://github.com/Odinn-1982/rnk-lobby)
+- â˜• [Support me](https://buymeacoffee.com/RNKcodex)
+- ðŸ’œ [Patreon](https://patreon.com/RNK)
 
 This is just the beginning.
 
-— RagNarok
+â€” RNK
 
 ---
 
@@ -136,7 +136,7 @@ Let me be real with you.
 
 I'm new to the module development scene, but I'm not new to building quality software. And I know the best way to prove that isn't with hype. It's with results.
 
-So I built **RagNarok's Lobby** — a comprehensive maintenance mode system for Foundry VTT. And I'm giving it away free.
+So I built **RNK Lobby** â€” a comprehensive maintenance mode system for Foundry VTT. And I'm giving it away free.
 
 **Here's what that tells you about me:**
 
@@ -152,13 +152,13 @@ So I built **RagNarok's Lobby** — a comprehensive maintenance mode system for 
 
 **What This Means For You:**
 
-If you use RagNarok's Lobby, you get:
+If you use RNK Lobby, you get:
 - A module that just works (no bugs, no rough edges)
 - Real features that solve real problems
 - Continuous support and updates
 - A creator you can trust
 
-And when I release something next? You'll remember this. You'll think, "RagNarok doesn't mess around. This will be solid." That's worth everything.
+And when I release something next? You'll remember this. You'll think, "RNK doesn't mess around. This will be solid." That's worth everything.
 
 **The Business Strategy Here?**
 
@@ -167,13 +167,13 @@ Build reputation. Build trust. Build a community. *Then* launch premium products
 You can't fake quality. But you can demonstrate it. And that's exactly what I'm doing.
 
 **Get started:** 
-- 📥 Download from Foundry Module Browser
-- 🔗 Check out the code on GitHub
-- 💬 Join RagNarok's Codex Discord
+- ðŸ“¥ Download from Foundry Module Browser
+- ðŸ”— Check out the code on GitHub
+- ðŸ’¬ Join RNK Codex Discord
 
 This is how you build a name. Not with marketing speak. With results.
 
-— RagNarok
+â€” RNK
 
 ---
 
@@ -183,7 +183,7 @@ This is how you build a name. Not with marketing speak. With results.
 
 ---
 
-I just published **RagNarok's Lobby** on the Foundry Module Browser, and I want to explain my approach to product development.
+I just published **RNK Lobby** on the Foundry Module Browser, and I want to explain my approach to product development.
 
 **The Module:**
 
@@ -235,13 +235,13 @@ This is the same strategy used by:
 You get production-grade software, free. For developers, you get readable, documented code as reference material. For the platform, you get another strong module that raises the bar for quality.
 
 **Links:**
-- GitHub: https://github.com/Odinn-1982/ragnaroks-lobby
+- GitHub: https://github.com/Odinn-1982/rnk-lobby
 - Foundry Registry: [coming soon after approval]
 - Support Development: [Patreon/Buy Me a Coffee]
 
 This is how you build reputation on a platform.
 
-— RagNarok
+â€” RNK
 
 ---
 
@@ -253,7 +253,7 @@ This is how you build reputation on a platform.
 
 I'm not great at self-promotion, but I want to share what I've been working on.
 
-**RagNarok's Lobby** just went live. It's a maintenance mode system for Foundry VTT, and I'm releasing it completely free.
+**RNK Lobby** just went live. It's a maintenance mode system for Foundry VTT, and I'm releasing it completely free.
 
 **Why am I doing this?**
 
@@ -286,7 +286,7 @@ I have a Patreon and Buy Me a Coffee for people who want to. But seriously, it's
 
 This is my contribution to the Foundry community. I hope it's useful.
 
-— RagNarok
+â€” RNK
 
 ---
 
@@ -294,7 +294,7 @@ This is my contribution to the Foundry community. I hope it's useful.
 
 **Title:** "I'm Giving Away a Premium-Quality Foundry Module. Here's Why."
 
-A few months ago, I started building **RagNarok's Lobby** — a maintenance mode system for Foundry VTT. I wanted to prove something: I can build rock-solid, high-quality software.
+A few months ago, I started building **RNK Lobby** â€” a maintenance mode system for Foundry VTT. I wanted to prove something: I can build rock-solid, high-quality software.
 
 So I finished it. Polished it. Documented it. And I'm releasing it for free.
 
@@ -312,7 +312,7 @@ The module is free forever. The code is clean and documented. The features are r
 
 Next time I release something, you'll remember this. You'll trust it. And *that's* the real win.
 
-— RagNarok
+â€” RNK
 
 ---
 
@@ -350,4 +350,6 @@ That's positioning. That's what this is about.
 This isn't a loss. This is an investment in yourself.
 
 ---
+
+
 

@@ -1,8 +1,8 @@
-/**
- * RagNarok's Lobby - System agnostic maintenance mode with GM control center.
+﻿/**
+ * RNK Lobby - System agnostic maintenance mode with GM control center.
  */
 
-const LOBBY_MODULE_ID = "ragnaroks-lobby";
+const LOBBY_MODULE_ID = "rnk-lobby";
 const LOBBY_SETTING_KEY = "lobbyActive";
 const GM_PREVIEW_KEY = "gmPreview";
 const CUSTOM_MESSAGE_KEY = "customMessage";
@@ -27,7 +27,7 @@ const SOCKET_ACTIONS = {
   POLL_CLOSE: "lobby-poll-close"
 };
 
-const DEFAULT_IMAGE_FILE = "assets/ragnaroks-codex.jpg";
+const DEFAULT_IMAGE_FILE = "assets/rnk-codex.jpg";
 const DEFAULT_APPEARANCE = {
   customTitle: "",
   accentColor: "#ff6b6b",
@@ -79,7 +79,7 @@ const MAX_PRESETS = 12;
 function odSent98_in2() {}
 
 const BUTTON_STACK_ID = "custom-sidebar-buttons";
-const BUTTON_STACK_STYLE_ID = "ragnaroks-lobby-button-stack-style";
+const BUTTON_STACK_STYLE_ID = "rnk-lobby-button-stack-style";
 
 function odMa_rk18_92() {}
 
@@ -243,7 +243,7 @@ let moduleBasePath = `modules/${LOBBY_MODULE_ID}`;
 
 function odTok1en98_2() {}
 
-class RagNarokLobby {
+class RNKLobby {
   static suppressSettingUpdate = false;
   static overlayElements = null;
   static countdownInterval = null;
@@ -262,27 +262,27 @@ class RagNarokLobby {
   static apps = {};
 
   static async init() {
-    RagNarokLobby.registerSettings();
+    RNKLobby.registerSettings();
 
     if (globalThis.Handlebars && !Handlebars.helpers.eq) {
       Handlebars.registerHelper("eq", (a, b) => a === b);
     }
 
     const module = game.modules?.get?.(LOBBY_MODULE_ID);
-    if (module) module.api = RagNarokLobby;
+    if (module) module.api = RNKLobby;
   }
 
   static registerSettings() {
     game.settings.register(LOBBY_MODULE_ID, LOBBY_SETTING_KEY, {
-      name: "game.settings.ragnaroks-lobby.lobbyActive.name",
-      hint: "game.settings.ragnaroks-lobby.lobbyActive.hint",
+      name: "game.settings.rnk-lobby.lobbyActive.name",
+      hint: "game.settings.rnk-lobby.lobbyActive.hint",
       scope: "world",
       config: false,
       type: Boolean,
       default: false,
       onChange: (value) => {
-        if (RagNarokLobby.suppressSettingUpdate) return;
-        RagNarokLobby.handleLobbyToggle(value, { source: "setting" });
+        if (RNKLobby.suppressSettingUpdate) return;
+        RNKLobby.handleLobbyToggle(value, { source: "setting" });
       }
     });
 
@@ -294,8 +294,8 @@ class RagNarokLobby {
       type: Boolean,
       default: false,
       onChange: () => {
-        const state = RagNarokLobby.collectStateFromSettings();
-        if (state.isActive) RagNarokLobby.handleLobbyToggle(true, { source: "setting", state });
+        const state = RNKLobby.collectStateFromSettings();
+        if (state.isActive) RNKLobby.handleLobbyToggle(true, { source: "setting", state });
       }
     });
 
@@ -332,7 +332,7 @@ class RagNarokLobby {
       config: false,
       type: Object,
       default: { ...DEFAULT_APPEARANCE },
-      onChange: () => RagNarokLobby.refreshOverlayAppearance()
+      onChange: () => RNKLobby.refreshOverlayAppearance()
     });
 
     game.settings.register(LOBBY_MODULE_ID, COUNTDOWN_SETTING_KEY, {
@@ -341,7 +341,7 @@ class RagNarokLobby {
       config: false,
       type: Object,
       default: { ...DEFAULT_COUNTDOWN },
-      onChange: () => RagNarokLobby.syncCountdownFromSettings()
+      onChange: () => RNKLobby.syncCountdownFromSettings()
     });
 
     game.settings.register(LOBBY_MODULE_ID, CHAT_HISTORY_KEY, {
@@ -366,7 +366,7 @@ class RagNarokLobby {
       config: false,
       type: Object,
       default: { ...DEFAULT_POLL_STATE },
-      onChange: (value) => RagNarokLobby.receivePollState(value)
+      onChange: (value) => RNKLobby.receivePollState(value)
     });
 
     game.settings.register(LOBBY_MODULE_ID, ANALYTICS_KEY, {
@@ -376,8 +376,8 @@ class RagNarokLobby {
       type: Object,
       default: { ...DEFAULT_ANALYTICS },
       onChange: () => {
-        RagNarokLobby.analytics = RagNarokLobby.getAnalyticsData();
-        if (RagNarokLobby.apps.analytics?.rendered) RagNarokLobby.apps.analytics.render(false);
+        RNKLobby.analytics = RNKLobby.getAnalyticsData();
+        if (RNKLobby.apps.analytics?.rendered) RNKLobby.apps.analytics.render(false);
       }
     });
   }
@@ -386,30 +386,30 @@ class RagNarokLobby {
     const moduleData = game.modules.get(LOBBY_MODULE_ID);
     if (moduleData?.path) moduleBasePath = moduleData.path.replace(/\/$/, "");
 
-    RagNarokLobby.chatMessages = RagNarokLobby.cloneChatHistory(game.settings.get(LOBBY_MODULE_ID, CHAT_HISTORY_KEY));
-  RagNarokLobby.analytics = RagNarokLobby.getAnalyticsData();
-  RagNarokLobby.pollState = RagNarokLobby.getPollStateFromSettings();
-    RagNarokLobby.currentState = RagNarokLobby.collectStateFromSettings();
-    RagNarokLobby.syncCountdownFromSettings();
+    RNKLobby.chatMessages = RNKLobby.cloneChatHistory(game.settings.get(LOBBY_MODULE_ID, CHAT_HISTORY_KEY));
+  RNKLobby.analytics = RNKLobby.getAnalyticsData();
+  RNKLobby.pollState = RNKLobby.getPollStateFromSettings();
+    RNKLobby.currentState = RNKLobby.collectStateFromSettings();
+    RNKLobby.syncCountdownFromSettings();
 
-    game.socket.on(`module.${LOBBY_MODULE_ID}`, (data) => RagNarokLobby.handleSocketMessage(data));
+    game.socket.on(`module.${LOBBY_MODULE_ID}`, (data) => RNKLobby.handleSocketMessage(data));
 
-    const isActive = RagNarokLobby.currentState.isActive;
+    const isActive = RNKLobby.currentState.isActive;
 
     if (!game.user.isGM && isActive) {
-      RagNarokLobby.showLobbyOverlay(RagNarokLobby.currentState);
-      RagNarokLobby.requestCurrentState();
+      RNKLobby.showLobbyOverlay(RNKLobby.currentState);
+      RNKLobby.requestCurrentState();
     } else if (game.user.isGM && isActive) {
-      RagNarokLobby.updateStatusBanner(true);
+      RNKLobby.updateStatusBanner(true);
     }
 
     if (game.user.isGM) {
-      setTimeout(() => RagNarokLobby.addSidebarButton(), 400);
+      setTimeout(() => RNKLobby.addSidebarButton(), 400);
     }
 
-    document.addEventListener("keydown", RagNarokLobby.handleGlobalKeydown, true);
+    document.addEventListener("keydown", RNKLobby.handleGlobalKeydown, true);
 
-    RagNarokLobby.updateSidebarButtonState();
+    RNKLobby.updateSidebarButtonState();
   }
 
   static handleGlobalKeydown(event) {
@@ -419,45 +419,45 @@ class RagNarokLobby {
       const isActive = game.settings.get(LOBBY_MODULE_ID, LOBBY_SETTING_KEY);
       if (isActive) {
         event.preventDefault();
-        RagNarokLobby.handleLobbyToggle(false, { source: "gm-escape" });
+        RNKLobby.handleLobbyToggle(false, { source: "gm-escape" });
       }
       return;
     }
 
-    if (RagNarokLobby.isOverlayVisible()) {
+    if (RNKLobby.isOverlayVisible()) {
       event.preventDefault();
-      RagNarokLobby.sendPlayerToLogin();
+      RNKLobby.sendPlayerToLogin();
     }
   }
 
   static handleSocketMessage(data) {
     switch (data?.action) {
       case SOCKET_ACTIONS.STATUS:
-        RagNarokLobby.handleLobbyToggle(data.isActive, { source: "socket", state: data.state });
+        RNKLobby.handleLobbyToggle(data.isActive, { source: "socket", state: data.state });
         break;
       case SOCKET_ACTIONS.REQUEST:
-        if (game.user.isGM) RagNarokLobby.sendStateToRequester(data.requester);
+        if (game.user.isGM) RNKLobby.sendStateToRequester(data.requester);
         break;
       case SOCKET_ACTIONS.STATE:
-        if (!data.recipient || data.recipient === game.user.id) RagNarokLobby.applyState(data.state);
+        if (!data.recipient || data.recipient === game.user.id) RNKLobby.applyState(data.state);
         break;
       case SOCKET_ACTIONS.CHAT_SEND:
-        if (game.user.isGM) RagNarokLobby.processInboundChat(data.payload);
+        if (game.user.isGM) RNKLobby.processInboundChat(data.payload);
         break;
       case SOCKET_ACTIONS.CHAT_BROADCAST:
-        RagNarokLobby.receiveChatMessage(data.message, { fromBroadcast: true });
+        RNKLobby.receiveChatMessage(data.message, { fromBroadcast: true });
         break;
       case SOCKET_ACTIONS.CHAT_CLEAR:
-        RagNarokLobby.clearChatMessages({ fromBroadcast: true });
+        RNKLobby.clearChatMessages({ fromBroadcast: true });
         break;
       case SOCKET_ACTIONS.POLL_UPDATE:
-        RagNarokLobby.receivePollState(data.poll);
+        RNKLobby.receivePollState(data.poll);
         break;
       case SOCKET_ACTIONS.POLL_VOTE:
-        if (game.user.isGM) RagNarokLobby.processPollVote(data.payload);
+        if (game.user.isGM) RNKLobby.processPollVote(data.payload);
         break;
       case SOCKET_ACTIONS.POLL_CLOSE:
-        RagNarokLobby.receivePollState(DEFAULT_POLL_STATE);
+        RNKLobby.receivePollState(DEFAULT_POLL_STATE);
         break;
       default:
         break;
@@ -467,12 +467,12 @@ class RagNarokLobby {
   static collectStateFromSettings() {
     return {
       isActive: game.settings.get(LOBBY_MODULE_ID, LOBBY_SETTING_KEY),
-      appearance: RagNarokLobby.getAppearanceSettings(),
-      countdown: RagNarokLobby.getCountdownState(),
+      appearance: RNKLobby.getAppearanceSettings(),
+      countdown: RNKLobby.getCountdownState(),
       customMessage: game.settings.get(LOBBY_MODULE_ID, CUSTOM_MESSAGE_KEY) ?? "",
       customImage: game.settings.get(LOBBY_MODULE_ID, CUSTOM_IMAGE_KEY) ?? "",
-      chat: RagNarokLobby.chatMessages,
-      poll: RagNarokLobby.getPollStateFromSettings()
+      chat: RNKLobby.chatMessages,
+      poll: RNKLobby.getPollStateFromSettings()
     };
   }
 
@@ -487,13 +487,13 @@ class RagNarokLobby {
   static async setAppearanceSettings(settings) {
     const merged = {
       ...DEFAULT_APPEARANCE,
-      ...RagNarokLobby.getAppearanceSettings(),
+      ...RNKLobby.getAppearanceSettings(),
       ...settings
     };
     await game.settings.set(LOBBY_MODULE_ID, APPEARANCE_SETTING_KEY, merged);
-    RagNarokLobby.currentState.appearance = merged;
-    RagNarokLobby.refreshOverlayAppearance();
-    RagNarokLobby.broadcastState();
+    RNKLobby.currentState.appearance = merged;
+    RNKLobby.refreshOverlayAppearance();
+    RNKLobby.broadcastState();
   }
 
   static getCountdownState() {
@@ -518,11 +518,11 @@ class RagNarokLobby {
       }
     };
     await game.settings.set(LOBBY_MODULE_ID, COUNTDOWN_SETTING_KEY, merged);
-    RagNarokLobby.currentState.countdown = merged;
-    RagNarokLobby.countdownCompletionHandled = !merged.isActive;
-    RagNarokLobby.syncCountdown(merged);
-    if (game.user.isGM && merged.isActive) await RagNarokLobby.recordCountdownStart();
-    RagNarokLobby.broadcastState();
+    RNKLobby.currentState.countdown = merged;
+    RNKLobby.countdownCompletionHandled = !merged.isActive;
+    RNKLobby.syncCountdown(merged);
+    if (game.user.isGM && merged.isActive) await RNKLobby.recordCountdownStart();
+    RNKLobby.broadcastState();
   }
 
   static cloneChatHistory(history) {
@@ -530,10 +530,10 @@ class RagNarokLobby {
   }
 
   static getThemeOptions() {
-    const appearance = RagNarokLobby.getAppearanceSettings();
+    const appearance = RNKLobby.getAppearanceSettings();
     return BUILT_IN_THEMES.map((theme) => ({
       ...theme,
-      isActive: RagNarokLobby.appearanceMatchesTheme(appearance, theme.appearance)
+      isActive: RNKLobby.appearanceMatchesTheme(appearance, theme.appearance)
     }));
   }
 
@@ -559,10 +559,10 @@ class RagNarokLobby {
       ui.notifications?.warn("Theme not found");
       return;
     }
-    await RagNarokLobby.setAppearanceSettings(theme.appearance);
-    if (RagNarokLobby.isOverlayVisible()) RagNarokLobby.applyAppearance();
+    await RNKLobby.setAppearanceSettings(theme.appearance);
+    if (RNKLobby.isOverlayVisible()) RNKLobby.applyAppearance();
     ui.notifications?.info(`Theme applied: ${theme.label}`);
-    if (RagNarokLobby.apps.appearance?.rendered) RagNarokLobby.apps.appearance.render(false);
+    if (RNKLobby.apps.appearance?.rendered) RNKLobby.apps.appearance.render(false);
   }
 
   static clonePollState(poll) {
@@ -576,7 +576,7 @@ class RagNarokLobby {
 
   static getPollStateFromSettings() {
     const stored = game.settings.get(LOBBY_MODULE_ID, POLL_STATE_KEY) || {};
-    return RagNarokLobby.normalizePollState(stored);
+    return RNKLobby.normalizePollState(stored);
   }
 
   static normalizePollState(state) {
@@ -592,7 +592,7 @@ class RagNarokLobby {
         }))
       : [];
     poll.responses = poll.responses && typeof poll.responses === "object" ? { ...poll.responses } : {};
-    const tallies = RagNarokLobby.computePollTallies(poll);
+    const tallies = RNKLobby.computePollTallies(poll);
     poll.options = poll.options.map((opt) => ({ ...opt, votes: tallies[opt.id] ?? 0 }));
     poll.active = Boolean(poll.active && poll.question && poll.options.length >= 2);
     if (!poll.active) {
@@ -615,51 +615,51 @@ class RagNarokLobby {
   }
 
   static async setPollState(state, { broadcast = true, persist = true } = {}) {
-    const normalized = RagNarokLobby.normalizePollState(state);
-    RagNarokLobby.pollState = RagNarokLobby.clonePollState(normalized);
-    RagNarokLobby.currentState.poll = RagNarokLobby.clonePollState(normalized);
+    const normalized = RNKLobby.normalizePollState(state);
+    RNKLobby.pollState = RNKLobby.clonePollState(normalized);
+    RNKLobby.currentState.poll = RNKLobby.clonePollState(normalized);
     if (persist && game.user.isGM) {
-      await game.settings.set(LOBBY_MODULE_ID, POLL_STATE_KEY, RagNarokLobby.pollState);
+      await game.settings.set(LOBBY_MODULE_ID, POLL_STATE_KEY, RNKLobby.pollState);
     }
-    if (broadcast && game.user.isGM) RagNarokLobby.broadcastPollState();
-    RagNarokLobby.refreshPollOverlay();
-    if (RagNarokLobby.apps.pollManager?.rendered) RagNarokLobby.apps.pollManager.render(false);
+    if (broadcast && game.user.isGM) RNKLobby.broadcastPollState();
+    RNKLobby.refreshPollOverlay();
+    if (RNKLobby.apps.pollManager?.rendered) RNKLobby.apps.pollManager.render(false);
   }
 
   static broadcastPollState() {
     game.socket.emit(`module.${LOBBY_MODULE_ID}`, {
       action: SOCKET_ACTIONS.POLL_UPDATE,
-      poll: RagNarokLobby.pollState
+      poll: RNKLobby.pollState
     });
   }
 
   static receivePollState(state) {
-    const normalized = RagNarokLobby.normalizePollState(state);
-    RagNarokLobby.pollState = RagNarokLobby.clonePollState(normalized);
-    RagNarokLobby.currentState.poll = RagNarokLobby.clonePollState(normalized);
-    RagNarokLobby.refreshPollOverlay();
-    if (RagNarokLobby.apps.pollManager?.rendered) RagNarokLobby.apps.pollManager.render(false);
+    const normalized = RNKLobby.normalizePollState(state);
+    RNKLobby.pollState = RNKLobby.clonePollState(normalized);
+    RNKLobby.currentState.poll = RNKLobby.clonePollState(normalized);
+    RNKLobby.refreshPollOverlay();
+    if (RNKLobby.apps.pollManager?.rendered) RNKLobby.apps.pollManager.render(false);
   }
 
   static async processPollVote(payload) {
     if (!game.user.isGM) return;
     const { userId, optionId, userName } = payload || {};
-    if (!userId || !optionId || !RagNarokLobby.pollState.active) return;
-    if (!RagNarokLobby.pollState.options.some((opt) => opt.id === optionId)) return;
-    RagNarokLobby.pollState.responses = {
-      ...RagNarokLobby.pollState.responses,
+    if (!userId || !optionId || !RNKLobby.pollState.active) return;
+    if (!RNKLobby.pollState.options.some((opt) => opt.id === optionId)) return;
+    RNKLobby.pollState.responses = {
+      ...RNKLobby.pollState.responses,
       [userId]: optionId
     };
-    const tallies = RagNarokLobby.computePollTallies(RagNarokLobby.pollState);
-    RagNarokLobby.pollState.options = RagNarokLobby.pollState.options.map((opt) => ({
+    const tallies = RNKLobby.computePollTallies(RNKLobby.pollState);
+    RNKLobby.pollState.options = RNKLobby.pollState.options.map((opt) => ({
       ...opt,
       votes: tallies[opt.id] ?? 0
     }));
-    await RagNarokLobby.setPollState(RagNarokLobby.pollState, { broadcast: true, persist: true });
+    await RNKLobby.setPollState(RNKLobby.pollState, { broadcast: true, persist: true });
   }
 
   static voteInPoll(optionId) {
-    if (!RagNarokLobby.pollState.active) return;
+    if (!RNKLobby.pollState.active) return;
     game.socket.emit(`module.${LOBBY_MODULE_ID}`, {
       action: SOCKET_ACTIONS.POLL_VOTE,
       payload: {
@@ -672,10 +672,10 @@ class RagNarokLobby {
 
   static async closePoll() {
     if (!game.user.isGM) return;
-    if (!RagNarokLobby.pollState.active) return;
-    await RagNarokLobby.recordPollOutcome(RagNarokLobby.pollState);
-    RagNarokLobby.pollState = { ...DEFAULT_POLL_STATE };
-    await RagNarokLobby.setPollState(RagNarokLobby.pollState, { broadcast: true, persist: true });
+    if (!RNKLobby.pollState.active) return;
+    await RNKLobby.recordPollOutcome(RNKLobby.pollState);
+    RNKLobby.pollState = { ...DEFAULT_POLL_STATE };
+    await RNKLobby.setPollState(RNKLobby.pollState, { broadcast: true, persist: true });
     game.socket.emit(`module.${LOBBY_MODULE_ID}`, { action: SOCKET_ACTIONS.POLL_CLOSE });
     ui.notifications?.info("Lobby poll closed");
   }
@@ -708,24 +708,24 @@ class RagNarokLobby {
       responses: {}
     };
 
-    await RagNarokLobby.setPollState(pollState, { broadcast: true, persist: true });
+    await RNKLobby.setPollState(pollState, { broadcast: true, persist: true });
     ui.notifications?.info("Lobby poll launched");
     return true;
   }
 
   static refreshPollOverlay() {
-    if (!RagNarokLobby.overlayElements?.poll) return;
-    RagNarokLobby.renderPollState();
+    if (!RNKLobby.overlayElements?.poll) return;
+    RNKLobby.renderPollState();
   }
 
   static getUserPollVote(userId = game.user?.id) {
-    return RagNarokLobby.pollState.responses?.[userId] ?? null;
+    return RNKLobby.pollState.responses?.[userId] ?? null;
   }
 
   static renderPollState() {
-    if (!RagNarokLobby.overlayElements?.poll) return;
-    const { container, question, options, status } = RagNarokLobby.overlayElements.poll;
-    const poll = RagNarokLobby.pollState;
+    if (!RNKLobby.overlayElements?.poll) return;
+    const { container, question, options, status } = RNKLobby.overlayElements.poll;
+    const poll = RNKLobby.pollState;
 
     if (!poll?.active) {
       container.classList.add("hidden");
@@ -738,9 +738,9 @@ class RagNarokLobby {
     container.classList.remove("hidden");
     question.textContent = poll.question;
 
-    const tallies = RagNarokLobby.computePollTallies(poll);
+    const tallies = RNKLobby.computePollTallies(poll);
     const totalVotes = Object.values(tallies).reduce((sum, count) => sum + count, 0);
-    const userVote = RagNarokLobby.getUserPollVote();
+    const userVote = RNKLobby.getUserPollVote();
 
     options.innerHTML = "";
     poll.options.forEach((opt) => {
@@ -749,23 +749,23 @@ class RagNarokLobby {
 
       const button = document.createElement("button");
       button.type = "button";
-      button.className = "ragnaroks-lobby-poll__option";
+      button.className = "rnk-lobby-poll__option";
       button.dataset.optionId = opt.id;
 
       const label = document.createElement("span");
-      label.className = "ragnaroks-lobby-poll__option-label";
+      label.className = "rnk-lobby-poll__option-label";
       label.textContent = opt.text;
 
       const meta = document.createElement("span");
-      meta.className = "ragnaroks-lobby-poll__option-meta";
+      meta.className = "rnk-lobby-poll__option-meta";
       if (totalVotes === 0) {
         meta.textContent = "No votes yet";
       } else {
-        meta.textContent = `${votes} vote${votes === 1 ? "" : "s"} · ${percentage}%`;
+        meta.textContent = `${votes} vote${votes === 1 ? "" : "s"} Ã‚Â· ${percentage}%`;
       }
 
       const bar = document.createElement("span");
-      bar.className = "ragnaroks-lobby-poll__option-bar";
+      bar.className = "rnk-lobby-poll__option-bar";
   bar.style.setProperty("--poll-progress", String(Math.min(100, Math.max(0, percentage))));
 
       button.append(label, meta, bar);
@@ -776,20 +776,20 @@ class RagNarokLobby {
     if (totalVotes === 0) {
       status.textContent = "Cast the first vote to kick things off.";
     } else if (userVote) {
-      status.textContent = "Your vote is locked in — feel free to change it while the poll is open.";
+      status.textContent = "Your vote is locked in Ã¢â‚¬â€ feel free to change it while the poll is open.";
     } else {
       status.textContent = "Pick an option to have your say.";
     }
   }
 
   static onPollOptionClick(event) {
-    const target = event.target.closest(".ragnaroks-lobby-poll__option");
+    const target = event.target.closest(".rnk-lobby-poll__option");
     if (!target) return;
     event.preventDefault();
-    if (!RagNarokLobby.pollState.active) return;
+    if (!RNKLobby.pollState.active) return;
     const optionId = target.dataset.optionId;
     if (!optionId) return;
-    RagNarokLobby.voteInPoll(optionId);
+    RNKLobby.voteInPoll(optionId);
   }
 
   static getPresets() {
@@ -804,15 +804,15 @@ class RagNarokLobby {
     if (!game.user.isGM) return;
     const trimmed = Array.isArray(presets) ? presets.slice(0, MAX_PRESETS) : [];
     await game.settings.set(LOBBY_MODULE_ID, PRESET_STORAGE_KEY, trimmed);
-    if (RagNarokLobby.apps.presets?.rendered) RagNarokLobby.apps.presets.render(false);
+    if (RNKLobby.apps.presets?.rendered) RNKLobby.apps.presets.render(false);
   }
 
   static async savePreset(name, { includeCountdown = true } = {}) {
     if (!game.user.isGM) return false;
-    const presets = RagNarokLobby.getPresets();
+    const presets = RNKLobby.getPresets();
     const displayName = name?.trim() || `Preset ${new Date().toLocaleString()}`;
-    const appearance = RagNarokLobby.getAppearanceSettings();
-    const countdown = RagNarokLobby.currentState.countdown || DEFAULT_COUNTDOWN;
+    const appearance = RNKLobby.getAppearanceSettings();
+    const countdown = RNKLobby.currentState.countdown || DEFAULT_COUNTDOWN;
 
     const countdownTemplate = includeCountdown
       ? {
@@ -839,21 +839,21 @@ class RagNarokLobby {
     const existingIndex = presets.findIndex((entry) => entry.name === preset.name);
     if (existingIndex >= 0) presets.splice(existingIndex, 1);
     presets.unshift(preset);
-    await RagNarokLobby.persistPresets(presets.slice(0, MAX_PRESETS));
+    await RNKLobby.persistPresets(presets.slice(0, MAX_PRESETS));
     ui.notifications?.info(`Saved lobby preset: ${preset.name}`);
     return true;
   }
 
   static async deletePreset(presetId) {
     if (!game.user.isGM) return;
-    const presets = RagNarokLobby.getPresets().filter((preset) => preset.id !== presetId);
-    await RagNarokLobby.persistPresets(presets);
+    const presets = RNKLobby.getPresets().filter((preset) => preset.id !== presetId);
+    await RNKLobby.persistPresets(presets);
     ui.notifications?.info("Preset removed");
   }
 
   static async applyPreset(presetId) {
     if (!game.user.isGM) return;
-    const preset = RagNarokLobby.getPresets().find((entry) => entry.id === presetId);
+    const preset = RNKLobby.getPresets().find((entry) => entry.id === presetId);
     if (!preset) {
       ui.notifications?.warn("Preset not found");
       return;
@@ -861,18 +861,18 @@ class RagNarokLobby {
 
     await game.settings.set(LOBBY_MODULE_ID, CUSTOM_MESSAGE_KEY, preset.customMessage ?? "");
     await game.settings.set(LOBBY_MODULE_ID, CUSTOM_IMAGE_KEY, preset.customImage ?? "");
-    RagNarokLobby.currentState.customMessage = preset.customMessage ?? "";
-    RagNarokLobby.currentState.customImage = preset.customImage ?? "";
+    RNKLobby.currentState.customMessage = preset.customMessage ?? "";
+    RNKLobby.currentState.customImage = preset.customImage ?? "";
 
-    await RagNarokLobby.setAppearanceSettings({
+    await RNKLobby.setAppearanceSettings({
       ...DEFAULT_APPEARANCE,
       ...(preset.appearance || {})
     });
-    RagNarokLobby.updateOverlayBackground();
+    RNKLobby.updateOverlayBackground();
 
     if (preset.countdownTemplate) {
       const template = preset.countdownTemplate;
-      await RagNarokLobby.setCountdownState({
+      await RNKLobby.setCountdownState({
         isActive: false,
         duration: template.duration || DEFAULT_COUNTDOWN.duration,
         endTime: 0,
@@ -886,8 +886,8 @@ class RagNarokLobby {
       });
     }
 
-    if (RagNarokLobby.isOverlayVisible()) {
-      RagNarokLobby.applyAppearance();
+    if (RNKLobby.isOverlayVisible()) {
+      RNKLobby.applyAppearance();
     }
 
     ui.notifications?.info(`Preset applied: ${preset.name}`);
@@ -908,71 +908,71 @@ class RagNarokLobby {
   static async commitAnalytics() {
     const payload = {
       ...DEFAULT_ANALYTICS,
-      ...RagNarokLobby.analytics,
-      sessions: Array.isArray(RagNarokLobby.analytics.sessions)
-        ? RagNarokLobby.analytics.sessions.slice(-MAX_RECENT_SESSIONS)
+      ...RNKLobby.analytics,
+      sessions: Array.isArray(RNKLobby.analytics.sessions)
+        ? RNKLobby.analytics.sessions.slice(-MAX_RECENT_SESSIONS)
         : [],
-      chatStats: RagNarokLobby.analytics.chatStats && typeof RagNarokLobby.analytics.chatStats === "object"
-        ? { ...RagNarokLobby.analytics.chatStats }
+      chatStats: RNKLobby.analytics.chatStats && typeof RNKLobby.analytics.chatStats === "object"
+        ? { ...RNKLobby.analytics.chatStats }
         : {},
-      pollHistory: Array.isArray(RagNarokLobby.analytics.pollHistory)
-        ? RagNarokLobby.analytics.pollHistory.slice(-MAX_RECENT_SESSIONS)
+      pollHistory: Array.isArray(RNKLobby.analytics.pollHistory)
+        ? RNKLobby.analytics.pollHistory.slice(-MAX_RECENT_SESSIONS)
         : [],
-      lastActivatedAt: RagNarokLobby.analytics.lastActivatedAt ?? null
+      lastActivatedAt: RNKLobby.analytics.lastActivatedAt ?? null
     };
-    RagNarokLobby.analytics = payload;
+    RNKLobby.analytics = payload;
     if (game.user.isGM) await game.settings.set(LOBBY_MODULE_ID, ANALYTICS_KEY, payload);
-    if (RagNarokLobby.apps.analytics?.rendered) RagNarokLobby.apps.analytics.render(false);
-    if (RagNarokLobby.apps.pollManager?.rendered) RagNarokLobby.apps.pollManager.render(false);
+    if (RNKLobby.apps.analytics?.rendered) RNKLobby.apps.analytics.render(false);
+    if (RNKLobby.apps.pollManager?.rendered) RNKLobby.apps.pollManager.render(false);
   }
 
   static async recordLobbyActivation() {
     if (!game.user.isGM) return;
-    if (RagNarokLobby.analytics.lastActivatedAt) return;
-    RagNarokLobby.analytics.lastActivatedAt = Date.now();
-    await RagNarokLobby.commitAnalytics();
+    if (RNKLobby.analytics.lastActivatedAt) return;
+    RNKLobby.analytics.lastActivatedAt = Date.now();
+    await RNKLobby.commitAnalytics();
   }
 
   static async recordLobbyDeactivation() {
     if (!game.user.isGM) return;
-    const startedAt = RagNarokLobby.analytics.lastActivatedAt;
+    const startedAt = RNKLobby.analytics.lastActivatedAt;
     if (!startedAt) return;
     const endedAt = Date.now();
     const duration = Math.max(0, endedAt - startedAt);
-    const sessions = Array.isArray(RagNarokLobby.analytics.sessions)
-      ? [...RagNarokLobby.analytics.sessions]
+    const sessions = Array.isArray(RNKLobby.analytics.sessions)
+      ? [...RNKLobby.analytics.sessions]
       : [];
     sessions.push({ startedAt, endedAt, duration });
-    RagNarokLobby.analytics.sessions = sessions.slice(-MAX_RECENT_SESSIONS);
-    RagNarokLobby.analytics.totalActiveMs = Number(RagNarokLobby.analytics.totalActiveMs || 0) + duration;
-    RagNarokLobby.analytics.lastActivatedAt = null;
-    await RagNarokLobby.commitAnalytics();
+    RNKLobby.analytics.sessions = sessions.slice(-MAX_RECENT_SESSIONS);
+    RNKLobby.analytics.totalActiveMs = Number(RNKLobby.analytics.totalActiveMs || 0) + duration;
+    RNKLobby.analytics.lastActivatedAt = null;
+    await RNKLobby.commitAnalytics();
   }
 
   static async recordChatAnalytics(message) {
     if (!game.user.isGM) return;
     if (!message?.userId) return;
-    const stats = RagNarokLobby.analytics.chatStats && typeof RagNarokLobby.analytics.chatStats === "object"
-      ? { ...RagNarokLobby.analytics.chatStats }
+    const stats = RNKLobby.analytics.chatStats && typeof RNKLobby.analytics.chatStats === "object"
+      ? { ...RNKLobby.analytics.chatStats }
       : {};
     const existing = stats[message.userId] || { count: 0, name: message.author || "Unknown", lastMessageAt: null };
     existing.count += 1;
     existing.name = message.author || existing.name;
     existing.lastMessageAt = message.timestamp || Date.now();
     stats[message.userId] = existing;
-    RagNarokLobby.analytics.chatStats = stats;
-    await RagNarokLobby.commitAnalytics();
+    RNKLobby.analytics.chatStats = stats;
+    await RNKLobby.commitAnalytics();
   }
 
   static async recordCountdownStart() {
     if (!game.user.isGM) return;
-    RagNarokLobby.analytics.countdownUses = Number(RagNarokLobby.analytics.countdownUses || 0) + 1;
-    await RagNarokLobby.commitAnalytics();
+    RNKLobby.analytics.countdownUses = Number(RNKLobby.analytics.countdownUses || 0) + 1;
+    await RNKLobby.commitAnalytics();
   }
 
   static async recordPollOutcome(poll) {
     if (!game.user.isGM) return;
-    const tallies = RagNarokLobby.computePollTallies(poll);
+    const tallies = RNKLobby.computePollTallies(poll);
     const summary = {
       question: poll?.question || "",
       closedAt: Date.now(),
@@ -982,102 +982,102 @@ class RagNarokLobby {
       })),
     };
     summary.totalVotes = summary.options.reduce((sum, opt) => sum + (opt.votes || 0), 0);
-    const history = Array.isArray(RagNarokLobby.analytics.pollHistory)
-      ? [...RagNarokLobby.analytics.pollHistory]
+    const history = Array.isArray(RNKLobby.analytics.pollHistory)
+      ? [...RNKLobby.analytics.pollHistory]
       : [];
     history.push(summary);
-    RagNarokLobby.analytics.pollHistory = history.slice(-MAX_RECENT_SESSIONS);
-    await RagNarokLobby.commitAnalytics();
+    RNKLobby.analytics.pollHistory = history.slice(-MAX_RECENT_SESSIONS);
+    await RNKLobby.commitAnalytics();
   }
 
   static applyState(state) {
     if (!state) return;
-    RagNarokLobby.currentState = {
+    RNKLobby.currentState = {
       isActive: state.isActive,
       appearance: { ...DEFAULT_APPEARANCE, ...state.appearance },
       countdown: { ...DEFAULT_COUNTDOWN, ...state.countdown },
       customMessage: state.customMessage ?? "",
       customImage: state.customImage ?? "",
-      poll: RagNarokLobby.normalizePollState(state.poll)
+      poll: RNKLobby.normalizePollState(state.poll)
     };
 
-    RagNarokLobby.chatMessages = RagNarokLobby.cloneChatHistory(state.chat ?? RagNarokLobby.chatMessages);
-    RagNarokLobby.syncCountdown(RagNarokLobby.currentState.countdown);
-    RagNarokLobby.pollState = RagNarokLobby.clonePollState(RagNarokLobby.currentState.poll);
+    RNKLobby.chatMessages = RNKLobby.cloneChatHistory(state.chat ?? RNKLobby.chatMessages);
+    RNKLobby.syncCountdown(RNKLobby.currentState.countdown);
+    RNKLobby.pollState = RNKLobby.clonePollState(RNKLobby.currentState.poll);
 
     if (state.isActive) {
-      RagNarokLobby.showLobbyOverlay(RagNarokLobby.currentState);
+      RNKLobby.showLobbyOverlay(RNKLobby.currentState);
     } else {
-      RagNarokLobby.hideLobbyOverlay();
+      RNKLobby.hideLobbyOverlay();
     }
 
-    RagNarokLobby.updateSidebarButtonState();
-    RagNarokLobby.updateStatusBanner(state.isActive);
-    RagNarokLobby.refreshChatMonitor();
-    RagNarokLobby.refreshPollOverlay();
-    if (RagNarokLobby.apps.hub?.rendered) RagNarokLobby.apps.hub.render(false);
-    if (RagNarokLobby.apps.switchboard?.rendered) RagNarokLobby.apps.switchboard.render(false);
-    if (RagNarokLobby.apps.countdown?.rendered) RagNarokLobby.apps.countdown.render(false);
-    if (RagNarokLobby.apps.appearance?.rendered) RagNarokLobby.apps.appearance.render(false);
+    RNKLobby.updateSidebarButtonState();
+    RNKLobby.updateStatusBanner(state.isActive);
+    RNKLobby.refreshChatMonitor();
+    RNKLobby.refreshPollOverlay();
+    if (RNKLobby.apps.hub?.rendered) RNKLobby.apps.hub.render(false);
+    if (RNKLobby.apps.switchboard?.rendered) RNKLobby.apps.switchboard.render(false);
+    if (RNKLobby.apps.countdown?.rendered) RNKLobby.apps.countdown.render(false);
+    if (RNKLobby.apps.appearance?.rendered) RNKLobby.apps.appearance.render(false);
   }
 
   static async handleLobbyToggle(isActive, options = {}) {
     const source = options.source ?? "manual";
     if (game.settings.get(LOBBY_MODULE_ID, LOBBY_SETTING_KEY) !== isActive && source !== "setting") {
       try {
-        RagNarokLobby.suppressSettingUpdate = true;
+        RNKLobby.suppressSettingUpdate = true;
         await game.settings.set(LOBBY_MODULE_ID, LOBBY_SETTING_KEY, isActive);
       } finally {
-        RagNarokLobby.suppressSettingUpdate = false;
+        RNKLobby.suppressSettingUpdate = false;
       }
     }
 
     if (game.settings.get(LOBBY_MODULE_ID, ENABLE_SOUND_KEY)) {
-      RagNarokLobby.playNotificationSound(isActive);
+      RNKLobby.playNotificationSound(isActive);
     }
 
-    RagNarokLobby.currentState.isActive = isActive;
+    RNKLobby.currentState.isActive = isActive;
 
-    const state = options.state ?? RagNarokLobby.collectStateFromSettings();
-    RagNarokLobby.currentState = { ...state, isActive };
+    const state = options.state ?? RNKLobby.collectStateFromSettings();
+    RNKLobby.currentState = { ...state, isActive };
     if (state?.poll) {
-      const normalizedPoll = RagNarokLobby.normalizePollState(state.poll);
-      RagNarokLobby.pollState = RagNarokLobby.clonePollState(normalizedPoll);
-      RagNarokLobby.currentState.poll = RagNarokLobby.clonePollState(normalizedPoll);
+      const normalizedPoll = RNKLobby.normalizePollState(state.poll);
+      RNKLobby.pollState = RNKLobby.clonePollState(normalizedPoll);
+      RNKLobby.currentState.poll = RNKLobby.clonePollState(normalizedPoll);
     }
 
     if (isActive) {
-      RagNarokLobby.showLobbyOverlay(state);
+      RNKLobby.showLobbyOverlay(state);
     } else {
-      RagNarokLobby.hideLobbyOverlay();
+      RNKLobby.hideLobbyOverlay();
     }
 
-    RagNarokLobby.updateSidebarButtonState();
-    RagNarokLobby.refreshSidebarStack();
-    RagNarokLobby.updateStatusBanner(isActive);
+    RNKLobby.updateSidebarButtonState();
+    RNKLobby.refreshSidebarStack();
+    RNKLobby.updateStatusBanner(isActive);
 
     if (game.user.isGM && source !== "socket") {
-      if (isActive) await RagNarokLobby.recordLobbyActivation();
-      else await RagNarokLobby.recordLobbyDeactivation();
-      RagNarokLobby.broadcastState();
+      if (isActive) await RNKLobby.recordLobbyActivation();
+      else await RNKLobby.recordLobbyDeactivation();
+      RNKLobby.broadcastState();
       ui.notifications?.info(
         isActive
-          ? game.i18n.localize("game.notifications.ragnaroks-lobby.lobby-activated")
-          : game.i18n.localize("game.notifications.ragnaroks-lobby.lobby-deactivated")
+          ? game.i18n.localize("game.notifications.rnk-lobby.lobby-activated")
+          : game.i18n.localize("game.notifications.rnk-lobby.lobby-deactivated")
       );
     }
 
-    if (RagNarokLobby.apps.hub?.rendered) RagNarokLobby.apps.hub.render(false);
-    if (RagNarokLobby.apps.switchboard?.rendered) RagNarokLobby.apps.switchboard.render(false);
-    if (RagNarokLobby.apps.countdown?.rendered) RagNarokLobby.apps.countdown.render(false);
+    if (RNKLobby.apps.hub?.rendered) RNKLobby.apps.hub.render(false);
+    if (RNKLobby.apps.switchboard?.rendered) RNKLobby.apps.switchboard.render(false);
+    if (RNKLobby.apps.countdown?.rendered) RNKLobby.apps.countdown.render(false);
   }
 
   static broadcastState() {
     if (!game.user.isGM) return;
     const state = {
-      ...RagNarokLobby.collectStateFromSettings(),
-      chat: RagNarokLobby.chatMessages,
-      poll: RagNarokLobby.pollState
+      ...RNKLobby.collectStateFromSettings(),
+      chat: RNKLobby.chatMessages,
+      poll: RNKLobby.pollState
     };
     game.socket.emit(`module.${LOBBY_MODULE_ID}`, {
       action: SOCKET_ACTIONS.STATUS,
@@ -1095,9 +1095,9 @@ class RagNarokLobby {
 
   static sendStateToRequester(requester) {
     const state = {
-      ...RagNarokLobby.collectStateFromSettings(),
-      chat: RagNarokLobby.chatMessages,
-      poll: RagNarokLobby.pollState
+      ...RNKLobby.collectStateFromSettings(),
+      chat: RNKLobby.chatMessages,
+      poll: RNKLobby.pollState
     };
     game.socket.emit(`module.${LOBBY_MODULE_ID}`, {
       action: SOCKET_ACTIONS.STATE,
@@ -1107,31 +1107,31 @@ class RagNarokLobby {
   }
 
   static addSidebarButton() {
-    const container = RagNarokLobby.getSidebarButtonStack();
+    const container = RNKLobby.getSidebarButtonStack();
     if (!container) return;
 
-    const existing = document.getElementById("ragnaroks-lobby-button");
+    const existing = document.getElementById("rnk-lobby-button");
     if (existing?.parentElement !== container) existing?.remove();
 
     const button = document.createElement("div");
-    button.id = "ragnaroks-lobby-button";
-    button.className = "ragnaroks-lobby-sidebar-button";
+    button.id = "rnk-lobby-button";
+    button.className = "rnk-lobby-sidebar-button";
     button.title = "Lobby Control Hub";
     button.innerHTML = '<i class="fas fa-door-closed"></i>';
 
     button.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
-      RagNarokLobby.openHub();
+      RNKLobby.openHub();
     });
 
     container.appendChild(button);
-    RagNarokLobby.updateSidebarButtonState(button);
-    RagNarokLobby.refreshSidebarStack();
+    RNKLobby.updateSidebarButtonState(button);
+    RNKLobby.refreshSidebarStack();
   }
 
   static getSidebarButtonStack() {
-    const tabs = document.querySelector("#sidebar-tabs");
+    const tabs = document.querySelector("#sidebar-tabs") || document.querySelector('#sidebar');
     if (!tabs) return null;
 
     let stack = tabs.querySelector(`#${BUTTON_STACK_ID}`);
@@ -1149,7 +1149,7 @@ class RagNarokLobby {
         max-width: 52px !important;
       `;
 
-      const reference = tabs.querySelector('.item[data-tab="settings"]') ?? tabs.lastElementChild;
+      const reference = tabs.querySelector('.item[data-tab="settings"]') ?? tabs.querySelector('.tab.settings') ?? tabs.querySelector('.item') ?? tabs.lastElementChild;
       if (reference) {
         reference.insertAdjacentElement("afterend", stack);
       } else {
@@ -1157,7 +1157,7 @@ class RagNarokLobby {
       }
     }
 
-    const legacy = tabs.querySelector("#ragnarok-sidebar-button-stack");
+    const legacy = tabs.querySelector("#RNK-sidebar-button-stack");
     if (legacy && legacy !== stack) {
       while (legacy.firstChild) stack.appendChild(legacy.firstChild);
       legacy.remove();
@@ -1171,7 +1171,7 @@ class RagNarokLobby {
       }
     });
 
-    RagNarokLobby.ensureSidebarStackStyles();
+    RNKLobby.ensureSidebarStackStyles();
     return stack;
   }
 
@@ -1197,7 +1197,7 @@ class RagNarokLobby {
         margin: 0 !important;
       }
 
-      #ragnaroks-lobby-button.ragnaroks-lobby-sidebar-button {
+      #rnk-lobby-button.rnk-lobby-sidebar-button {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -1216,20 +1216,20 @@ class RagNarokLobby {
         margin: 2px 0 !important;
       }
 
-      #ragnaroks-lobby-button.ragnaroks-lobby-sidebar-button i {
+      #rnk-lobby-button.rnk-lobby-sidebar-button i {
         font-size: 14px !important;
         pointer-events: none !important;
       }
 
-      #ragnaroks-lobby-button.ragnaroks-lobby-sidebar-button:hover,
-      #ragnaroks-lobby-button.ragnaroks-lobby-sidebar-button:focus-visible {
+      #rnk-lobby-button.rnk-lobby-sidebar-button:hover,
+      #rnk-lobby-button.rnk-lobby-sidebar-button:focus-visible {
         border-color: #ff6b6b !important;
         color: #ff6b6b !important;
         box-shadow: 0 0 12px rgba(255, 107, 107, 0.4) !important;
         outline: none !important;
       }
 
-      #ragnaroks-lobby-button.ragnaroks-lobby-sidebar-button.active {
+      #rnk-lobby-button.rnk-lobby-sidebar-button.active {
         border-color: #ff6b6b !important;
         color: #ff6b6b !important;
         box-shadow: 0 0 14px rgba(255, 107, 107, 0.55) !important;
@@ -1239,17 +1239,17 @@ class RagNarokLobby {
   }
 
   static openHub() {
-    console.log("RagNarok's Lobby | Opening Control Hub");
-    if (!RagNarokLobby.apps.hub) {
-      RagNarokLobby.apps.hub = new RagNarokLobbyHub();
+    console.log("RNK Lobby | Opening Control Hub");
+    if (!RNKLobby.apps.hub) {
+      RNKLobby.apps.hub = new RNKLobbyHub();
     }
-    RagNarokLobby.apps.hub.render(true);
+    RNKLobby.apps.hub.render(true);
   }
 
   static updateSidebarButtonState(button = null) {
-    const btn = button || document.getElementById("ragnaroks-lobby-button");
+    const btn = button || document.getElementById("rnk-lobby-button");
     if (!btn) return;
-    if (RagNarokLobby.currentState.isActive) {
+    if (RNKLobby.currentState.isActive) {
       btn.classList.add("active");
       btn.setAttribute("aria-pressed", "true");
     } else {
@@ -1259,9 +1259,9 @@ class RagNarokLobby {
   }
 
   static refreshSidebarStack() {
-    const stack = RagNarokLobby.getSidebarButtonStack();
+    const stack = RNKLobby.getSidebarButtonStack();
     if (!stack) return;
-    const lobbyButton = document.getElementById("ragnaroks-lobby-button");
+    const lobbyButton = document.getElementById("rnk-lobby-button");
     if (lobbyButton && lobbyButton.parentElement !== stack) {
       stack.appendChild(lobbyButton);
     }
@@ -1272,46 +1272,46 @@ class RagNarokLobby {
       const soundPath = isActive ? "sounds/notify.wav" : "sounds/lock.wav";
       AudioHelper.play({ src: soundPath, volume: 0.5, autoplay: true, loop: false }, false);
     } catch (error) {
-      console.warn("RagNarok's Lobby | Could not play notification sound:", error);
+      console.warn("RNK Lobby | Could not play notification sound:", error);
     }
   }
 
-  static showLobbyOverlay(state = RagNarokLobby.currentState) {
+  static showLobbyOverlay(state = RNKLobby.currentState) {
     const gmPreview = game.user.isGM && game.settings.get(LOBBY_MODULE_ID, GM_PREVIEW_KEY);
     if (game.user.isGM && !gmPreview) return;
 
-    RagNarokLobby.removeExistingOverlay();
+    RNKLobby.removeExistingOverlay();
 
     const overlay = document.createElement("div");
-    overlay.id = "ragnaroks-lobby-overlay";
-    overlay.classList.add("ragnaroks-lobby-active");
+    overlay.id = "rnk-lobby-overlay";
+    overlay.classList.add("rnk-lobby-active");
 
     const content = document.createElement("div");
-    content.classList.add("ragnaroks-lobby-content");
+    content.classList.add("rnk-lobby-content");
 
     const info = document.createElement("section");
-    info.classList.add("ragnaroks-lobby-info");
+    info.classList.add("rnk-lobby-info");
 
     const title = document.createElement("h1");
-    title.classList.add("ragnaroks-lobby-title");
+    title.classList.add("rnk-lobby-title");
 
     const message = document.createElement("p");
-    message.classList.add("ragnaroks-lobby-message");
+    message.classList.add("rnk-lobby-message");
 
     const countdownContainer = document.createElement("div");
-    countdownContainer.classList.add("ragnaroks-lobby-countdown");
+    countdownContainer.classList.add("rnk-lobby-countdown");
 
     const countdownLabel = document.createElement("span");
-    countdownLabel.classList.add("ragnaroks-lobby-countdown__label");
+    countdownLabel.classList.add("rnk-lobby-countdown__label");
 
     const countdownTimer = document.createElement("strong");
-    countdownTimer.classList.add("ragnaroks-lobby-countdown__timer");
+    countdownTimer.classList.add("rnk-lobby-countdown__timer");
 
     const progressBarWrapper = document.createElement("div");
-    progressBarWrapper.classList.add("ragnaroks-lobby-progress");
+    progressBarWrapper.classList.add("rnk-lobby-progress");
 
     const progressBar = document.createElement("div");
-    progressBar.classList.add("ragnaroks-lobby-progress__bar");
+    progressBar.classList.add("rnk-lobby-progress__bar");
     progressBarWrapper.appendChild(progressBar);
 
     countdownContainer.appendChild(countdownLabel);
@@ -1319,7 +1319,7 @@ class RagNarokLobby {
     countdownContainer.appendChild(progressBarWrapper);
 
     const dots = document.createElement("div");
-    dots.classList.add("ragnaroks-lobby-dots");
+    dots.classList.add("rnk-lobby-dots");
     dots.innerHTML = "<span></span><span></span><span></span>";
 
     info.appendChild(title);
@@ -1328,16 +1328,16 @@ class RagNarokLobby {
     info.appendChild(dots);
 
     const chat = document.createElement("section");
-    chat.classList.add("ragnaroks-lobby-chat");
+    chat.classList.add("rnk-lobby-chat");
 
     const chatHeader = document.createElement("h2");
     chatHeader.textContent = "Lobby Chat";
 
     const chatLog = document.createElement("div");
-    chatLog.classList.add("ragnaroks-lobby-chat__log");
+    chatLog.classList.add("rnk-lobby-chat__log");
 
     const chatForm = document.createElement("form");
-    chatForm.classList.add("ragnaroks-lobby-chat__form");
+    chatForm.classList.add("rnk-lobby-chat__form");
 
     const chatInput = document.createElement("input");
     chatInput.type = "text";
@@ -1347,19 +1347,19 @@ class RagNarokLobby {
 
     
     const pollSection = document.createElement("section");
-    pollSection.classList.add("ragnaroks-lobby-poll");
+    pollSection.classList.add("rnk-lobby-poll");
 
     const pollHeader = document.createElement("h2");
     pollHeader.textContent = "Ready Check";
 
     const pollQuestion = document.createElement("p");
-    pollQuestion.classList.add("ragnaroks-lobby-poll__question");
+    pollQuestion.classList.add("rnk-lobby-poll__question");
 
     const pollOptions = document.createElement("div");
-    pollOptions.classList.add("ragnaroks-lobby-poll__options");
+    pollOptions.classList.add("rnk-lobby-poll__options");
 
     const pollStatus = document.createElement("p");
-    pollStatus.classList.add("ragnaroks-lobby-poll__status");
+    pollStatus.classList.add("rnk-lobby-poll__status");
 
     pollSection.appendChild(pollHeader);
     pollSection.appendChild(pollQuestion);
@@ -1374,7 +1374,7 @@ class RagNarokLobby {
 
     const logoutButton = document.createElement("button");
     logoutButton.type = "button";
-    logoutButton.classList.add("ragnaroks-lobby-logout");
+    logoutButton.classList.add("rnk-lobby-logout");
     logoutButton.textContent = "Return to Login";
 
     chat.appendChild(chatHeader);
@@ -1388,7 +1388,7 @@ class RagNarokLobby {
     overlay.appendChild(content);
 
     const customImage = state.customImage ?? "";
-    const resolvedImagePath = RagNarokLobby.resolveImagePath(customImage);
+    const resolvedImagePath = RNKLobby.resolveImagePath(customImage);
     const routedImagePath = globalThis?.foundry?.utils?.getRoute
       ? foundry.utils.getRoute(resolvedImagePath)
       : resolvedImagePath;
@@ -1396,7 +1396,7 @@ class RagNarokLobby {
 
     document.body.appendChild(overlay);
 
-    RagNarokLobby.overlayElements = {
+    RNKLobby.overlayElements = {
       overlay,
       content,
       info,
@@ -1421,51 +1421,51 @@ class RagNarokLobby {
       }
     };
 
-    RagNarokLobby.applyAppearance(state);
-    RagNarokLobby.renderChatMessages();
-  RagNarokLobby.renderPollState();
-    RagNarokLobby.updateCountdownDisplay();
+    RNKLobby.applyAppearance(state);
+    RNKLobby.renderChatMessages();
+  RNKLobby.renderPollState();
+    RNKLobby.updateCountdownDisplay();
 
     chatForm.addEventListener("submit", (event) => {
       event.preventDefault();
       const text = chatInput.value.trim();
       if (!text) return;
-      RagNarokLobby.sendChatMessage(text);
+      RNKLobby.sendChatMessage(text);
       chatInput.value = "";
     });
 
-    logoutButton.addEventListener("click", () => RagNarokLobby.sendPlayerToLogin());
+    logoutButton.addEventListener("click", () => RNKLobby.sendPlayerToLogin());
 
-  pollOptions.addEventListener("click", (event) => RagNarokLobby.onPollOptionClick(event));
+  pollOptions.addEventListener("click", (event) => RNKLobby.onPollOptionClick(event));
 
     const shouldDisableInteraction = !game.user.isGM || gmPreview;
     if (shouldDisableInteraction) {
-      RagNarokLobby.disableWorldInteraction();
+      RNKLobby.disableWorldInteraction();
     }
   }
 
   static removeExistingOverlay() {
-    const existing = document.getElementById("ragnaroks-lobby-overlay");
+    const existing = document.getElementById("rnk-lobby-overlay");
     if (existing) existing.remove();
-    RagNarokLobby.overlayElements = null;
+    RNKLobby.overlayElements = null;
   }
 
   static hideLobbyOverlay() {
-    const overlay = document.getElementById("ragnaroks-lobby-overlay");
+    const overlay = document.getElementById("rnk-lobby-overlay");
     if (overlay) {
-      overlay.classList.remove("ragnaroks-lobby-active");
+      overlay.classList.remove("rnk-lobby-active");
       setTimeout(() => {
         overlay.remove();
       }, 250);
     }
-    RagNarokLobby.overlayElements = null;
-    RagNarokLobby.enableWorldInteraction();
+    RNKLobby.overlayElements = null;
+    RNKLobby.enableWorldInteraction();
   }
 
-  static applyAppearance(state = RagNarokLobby.currentState) {
-    if (!RagNarokLobby.overlayElements) return;
+  static applyAppearance(state = RNKLobby.currentState) {
+    if (!RNKLobby.overlayElements) return;
 
-    const { overlay, content, info, title, message } = RagNarokLobby.overlayElements;
+    const { overlay, content, info, title, message } = RNKLobby.overlayElements;
     const appearance = state.appearance ?? DEFAULT_APPEARANCE;
     const customMessage = state.customMessage?.trim();
 
@@ -1480,57 +1480,57 @@ class RagNarokLobby {
     if (title) title.style.fontFamily = appearance.headingFont || DEFAULT_APPEARANCE.headingFont;
     if (message) message.style.fontFamily = appearance.bodyFont || DEFAULT_APPEARANCE.bodyFont;
 
-    const localizedTitle = game.i18n.localize("game.messages.ragnaroks-lobby.maintenance-title");
+    const localizedTitle = game.i18n.localize("game.messages.rnk-lobby.maintenance-title");
     title.textContent = appearance.customTitle?.trim() || localizedTitle;
 
-    const defaultMessage = game.i18n.localize("game.messages.ragnaroks-lobby.maintenance-message");
+    const defaultMessage = game.i18n.localize("game.messages.rnk-lobby.maintenance-message");
     message.textContent = customMessage || defaultMessage;
   }
 
   static refreshOverlayAppearance() {
-    RagNarokLobby.currentState.appearance = RagNarokLobby.getAppearanceSettings();
-    if (RagNarokLobby.isOverlayVisible()) {
-      RagNarokLobby.applyAppearance();
-      RagNarokLobby.updateOverlayBackground();
+    RNKLobby.currentState.appearance = RNKLobby.getAppearanceSettings();
+    if (RNKLobby.isOverlayVisible()) {
+      RNKLobby.applyAppearance();
+      RNKLobby.updateOverlayBackground();
     }
   }
 
   static syncCountdownFromSettings() {
-    const state = RagNarokLobby.getCountdownState();
-    RagNarokLobby.currentState.countdown = state;
-    RagNarokLobby.countdownCompletionHandled = !state.isActive;
-    RagNarokLobby.syncCountdown(state);
+    const state = RNKLobby.getCountdownState();
+    RNKLobby.currentState.countdown = state;
+    RNKLobby.countdownCompletionHandled = !state.isActive;
+    RNKLobby.syncCountdown(state);
   }
 
   static syncCountdown(state) {
-    if (RagNarokLobby.countdownInterval) {
-      clearInterval(RagNarokLobby.countdownInterval);
-      RagNarokLobby.countdownInterval = null;
+    if (RNKLobby.countdownInterval) {
+      clearInterval(RNKLobby.countdownInterval);
+      RNKLobby.countdownInterval = null;
     }
 
     if (!state?.isActive) {
-      RagNarokLobby.updateCountdownDisplay();
+      RNKLobby.updateCountdownDisplay();
       return;
     }
 
-    RagNarokLobby.countdownInterval = window.setInterval(() => RagNarokLobby.updateCountdownDisplay(), 1000);
-    RagNarokLobby.updateCountdownDisplay();
+    RNKLobby.countdownInterval = window.setInterval(() => RNKLobby.updateCountdownDisplay(), 1000);
+    RNKLobby.updateCountdownDisplay();
   }
 
   static updateCountdownDisplay() {
-    if (!RagNarokLobby.overlayElements) return;
-    const countdown = RagNarokLobby.currentState.countdown;
-    const elements = RagNarokLobby.overlayElements.countdown;
+    if (!RNKLobby.overlayElements) return;
+    const countdown = RNKLobby.currentState.countdown;
+    const elements = RNKLobby.overlayElements.countdown;
     if (!elements) return;
 
     if (!countdown?.isActive || countdown.endTime <= Date.now()) {
       elements.container.classList.add("hidden");
-      if (RagNarokLobby.countdownInterval) {
-        clearInterval(RagNarokLobby.countdownInterval);
-        RagNarokLobby.countdownInterval = null;
+      if (RNKLobby.countdownInterval) {
+        clearInterval(RNKLobby.countdownInterval);
+        RNKLobby.countdownInterval = null;
       }
       if (countdown?.isActive && countdown.endTime <= Date.now()) {
-        RagNarokLobby.onCountdownComplete();
+        RNKLobby.onCountdownComplete();
       }
       return;
     }
@@ -1554,9 +1554,9 @@ class RagNarokLobby {
   }
 
   static async onCountdownComplete() {
-    if (RagNarokLobby.countdownCompletionHandled) return;
-    RagNarokLobby.countdownCompletionHandled = true;
-    const countdown = { ...RagNarokLobby.currentState.countdown };
+    if (RNKLobby.countdownCompletionHandled) return;
+    RNKLobby.countdownCompletionHandled = true;
+    const countdown = { ...RNKLobby.currentState.countdown };
     const actions = {
       ...DEFAULT_COUNTDOWN.actions,
       ...(countdown.actions || {})
@@ -1564,9 +1564,9 @@ class RagNarokLobby {
 
     if (game.user.isGM) {
       try {
-        await RagNarokLobby.executeCountdownActions(actions);
+        await RNKLobby.executeCountdownActions(actions);
       } catch (error) {
-        console.error("RagNarok's Lobby | Countdown action failed", error);
+        console.error("RNK Lobby | Countdown action failed", error);
       }
       const nextState = {
         ...countdown,
@@ -1575,15 +1575,15 @@ class RagNarokLobby {
         endTime: 0,
         actions
       };
-      await RagNarokLobby.setCountdownState(nextState);
+      await RNKLobby.setCountdownState(nextState);
       ui.notifications?.info("Lobby countdown complete");
     } else {
-      RagNarokLobby.currentState.countdown = {
+      RNKLobby.currentState.countdown = {
         ...countdown,
         isActive: false,
         endTime: 0
       };
-      RagNarokLobby.syncCountdown(RagNarokLobby.currentState.countdown);
+      RNKLobby.syncCountdown(RNKLobby.currentState.countdown);
     }
   }
 
@@ -1600,7 +1600,7 @@ class RagNarokLobby {
       try {
         await AudioHelper.play({ src: actions.soundPath.trim(), volume: 0.8, autoplay: true, loop: false }, true);
       } catch (error) {
-        console.warn("RagNarok's Lobby | Countdown sound failed", error);
+        console.warn("RNK Lobby | Countdown sound failed", error);
       }
     }
 
@@ -1622,7 +1622,7 @@ class RagNarokLobby {
         try {
           await macro.execute();
         } catch (error) {
-          console.error("RagNarok's Lobby | Countdown macro failed", error);
+          console.error("RNK Lobby | Countdown macro failed", error);
         }
       }
     }
@@ -1661,7 +1661,7 @@ class RagNarokLobby {
   }
 
   static isOverlayVisible() {
-    return Boolean(document.getElementById("ragnaroks-lobby-overlay"));
+    return Boolean(document.getElementById("rnk-lobby-overlay"));
   }
 
   static resolveImagePath(imageSetting) {
@@ -1673,13 +1673,13 @@ class RagNarokLobby {
   }
 
   static updateOverlayBackground() {
-    if (!RagNarokLobby.overlayElements?.overlay) return;
-    const customImage = RagNarokLobby.currentState.customImage ?? "";
-    const resolvedImagePath = RagNarokLobby.resolveImagePath(customImage);
+    if (!RNKLobby.overlayElements?.overlay) return;
+    const customImage = RNKLobby.currentState.customImage ?? "";
+    const resolvedImagePath = RNKLobby.resolveImagePath(customImage);
     const routedImagePath = globalThis?.foundry?.utils?.getRoute
       ? foundry.utils.getRoute(resolvedImagePath)
       : resolvedImagePath;
-    RagNarokLobby.overlayElements.overlay.style.setProperty("--lobby-bg-image", `url('${routedImagePath}')`);
+    RNKLobby.overlayElements.overlay.style.setProperty("--lobby-bg-image", `url('${routedImagePath}')`);
   }
 
   static sendChatMessage(text) {
@@ -1696,12 +1696,12 @@ class RagNarokLobby {
   }
 
   static async processInboundChat(payload) {
-    const message = RagNarokLobby.normalizeChatMessage(payload);
-    RagNarokLobby.chatMessages.push(message);
-    if (RagNarokLobby.chatMessages.length > MAX_CHAT_ENTRIES) RagNarokLobby.chatMessages.shift();
-    await game.settings.set(LOBBY_MODULE_ID, CHAT_HISTORY_KEY, RagNarokLobby.chatMessages);
-    await RagNarokLobby.recordChatAnalytics(message);
-    RagNarokLobby.broadcastChatMessage(message);
+    const message = RNKLobby.normalizeChatMessage(payload);
+    RNKLobby.chatMessages.push(message);
+    if (RNKLobby.chatMessages.length > MAX_CHAT_ENTRIES) RNKLobby.chatMessages.shift();
+    await game.settings.set(LOBBY_MODULE_ID, CHAT_HISTORY_KEY, RNKLobby.chatMessages);
+    await RNKLobby.recordChatAnalytics(message);
+    RNKLobby.broadcastChatMessage(message);
   }
 
   static broadcastChatMessage(message) {
@@ -1713,7 +1713,7 @@ class RagNarokLobby {
 
   static normalizeChatMessage(payload) {
     const timestamp = payload?.timestamp ?? Date.now();
-    const sanitized = RagNarokLobby.escapeHTML(payload?.text || "").replace(/\n/g, "<br>");
+    const sanitized = RNKLobby.escapeHTML(payload?.text || "").replace(/\n/g, "<br>");
     return {
       id: `${payload?.userId || "anon"}-${timestamp}`,
       author: payload?.author || "Unknown",
@@ -1725,33 +1725,33 @@ class RagNarokLobby {
 
   static receiveChatMessage(message, { fromBroadcast = false } = {}) {
     if (!message) return;
-    const exists = RagNarokLobby.chatMessages.some((entry) => entry.id === message.id);
-    if (!exists) RagNarokLobby.chatMessages.push(message);
-    if (RagNarokLobby.chatMessages.length > MAX_CHAT_ENTRIES) RagNarokLobby.chatMessages.shift();
+    const exists = RNKLobby.chatMessages.some((entry) => entry.id === message.id);
+    if (!exists) RNKLobby.chatMessages.push(message);
+    if (RNKLobby.chatMessages.length > MAX_CHAT_ENTRIES) RNKLobby.chatMessages.shift();
     if (!fromBroadcast && game.user.isGM) {
-      game.settings.set(LOBBY_MODULE_ID, CHAT_HISTORY_KEY, RagNarokLobby.chatMessages);
+      game.settings.set(LOBBY_MODULE_ID, CHAT_HISTORY_KEY, RNKLobby.chatMessages);
     }
-    RagNarokLobby.renderChatMessages();
-    RagNarokLobby.refreshChatMonitor();
+    RNKLobby.renderChatMessages();
+    RNKLobby.refreshChatMonitor();
   }
 
   static renderChatMessages() {
-    if (!RagNarokLobby.overlayElements) return;
-    const log = RagNarokLobby.overlayElements.chat.log;
+    if (!RNKLobby.overlayElements) return;
+    const log = RNKLobby.overlayElements.chat.log;
     if (!log) return;
     log.innerHTML = "";
-    if (!RagNarokLobby.chatMessages.length) {
+    if (!RNKLobby.chatMessages.length) {
       const empty = document.createElement("p");
-      empty.classList.add("ragnaroks-lobby-chat__empty");
+      empty.classList.add("rnk-lobby-chat__empty");
       empty.textContent = "No messages yet. Be the first to say hi.";
       log.appendChild(empty);
       return;
     }
-    RagNarokLobby.chatMessages
+    RNKLobby.chatMessages
       .slice(-MAX_CHAT_ENTRIES)
       .forEach((entry) => {
         const article = document.createElement("article");
-        article.classList.add("ragnaroks-lobby-chat__entry");
+        article.classList.add("rnk-lobby-chat__entry");
         article.innerHTML = `<header><strong>${entry.author}</strong><time>${new Date(entry.timestamp).toLocaleTimeString()}</time></header><p>${entry.text}</p>`;
         log.appendChild(article);
       });
@@ -1760,30 +1760,30 @@ class RagNarokLobby {
 
   static async clearChatMessages({ fromBroadcast = false } = {}) {
     if (!fromBroadcast && game.user.isGM) {
-      RagNarokLobby.chatMessages = [];
+      RNKLobby.chatMessages = [];
       await game.settings.set(LOBBY_MODULE_ID, CHAT_HISTORY_KEY, []);
       game.socket.emit(`module.${LOBBY_MODULE_ID}`, { action: SOCKET_ACTIONS.CHAT_CLEAR });
     } else if (fromBroadcast) {
-      RagNarokLobby.chatMessages = [];
+      RNKLobby.chatMessages = [];
     }
-    RagNarokLobby.renderChatMessages();
-    RagNarokLobby.refreshChatMonitor();
+    RNKLobby.renderChatMessages();
+    RNKLobby.refreshChatMonitor();
   }
 
   static refreshChatMonitor() {
-    if (RagNarokLobby.apps.chatMonitor?.rendered) RagNarokLobby.apps.chatMonitor.render(false);
+    if (RNKLobby.apps.chatMonitor?.rendered) RNKLobby.apps.chatMonitor.render(false);
   }
 
   static updateStatusBanner(isActive) {
     if (!game.user.isGM) return;
-    let banner = document.getElementById("ragnaroks-lobby-status-banner");
+    let banner = document.getElementById("rnk-lobby-status-banner");
     if (!isActive) {
       if (banner) banner.remove();
       return;
     }
     if (!banner) {
       banner = document.createElement("div");
-      banner.id = "ragnaroks-lobby-status-banner";
+      banner.id = "rnk-lobby-status-banner";
       document.body.appendChild(banner);
     }
     banner.textContent = "Lobby active - players are waiting";
@@ -1817,28 +1817,28 @@ class RagNarokLobby {
   static async resetAppearanceToDefaults() {
     await game.settings.set(LOBBY_MODULE_ID, CUSTOM_MESSAGE_KEY, "");
     await game.settings.set(LOBBY_MODULE_ID, CUSTOM_IMAGE_KEY, "");
-    RagNarokLobby.currentState.customMessage = "";
-    RagNarokLobby.currentState.customImage = "";
-    await RagNarokLobby.setAppearanceSettings({ ...DEFAULT_APPEARANCE });
+    RNKLobby.currentState.customMessage = "";
+    RNKLobby.currentState.customImage = "";
+    await RNKLobby.setAppearanceSettings({ ...DEFAULT_APPEARANCE });
   }
 }
 
-class RagNarokLobbyHub extends RenderableApplicationBase {
+class RNKLobbyHub extends RenderableApplicationBase {
   static get defaultOptions() {
     if (USE_APPLICATION_V2) {
       return mergeDefaults(this, {
-        id: "ragnaroks-lobby-hub",
-        classes: ["ragnaroks-lobby"],
-        window: { title: "RagNarok's Lobby", resizable: true },
+        id: "rnk-lobby-hub",
+        classes: ["rnk-lobby"],
+        window: { title: "RNK Lobby", resizable: true },
         position: { width: 820 }
       });
     }
 
     return mergeDefaults(this, {
-      id: "ragnaroks-lobby-hub",
-      classes: ["ragnaroks-lobby"],
-      title: "RagNarok's Lobby",
-      template: RagNarokLobby.templatePath("control-hub.hbs"),
+      id: "rnk-lobby-hub",
+      classes: ["rnk-lobby"],
+      title: "RNK Lobby",
+      template: RNKLobby.templatePath("control-hub.hbs"),
       width: 820,
       height: "auto",
       resizable: true
@@ -1846,17 +1846,17 @@ class RagNarokLobbyHub extends RenderableApplicationBase {
   }
 
   static DEFAULT_OPTIONS = USE_APPLICATION_V2
-    ? mergeDefaults(RagNarokLobbyHub, {
-        id: "ragnaroks-lobby-hub",
-        classes: ["ragnaroks-lobby"],
-        window: { title: "RagNarok's Lobby", resizable: true },
+    ? mergeDefaults(RNKLobbyHub, {
+        id: "rnk-lobby-hub",
+        classes: ["rnk-lobby"],
+        window: { title: "RNK Lobby", resizable: true },
         position: { width: 820 }
       })
-    : mergeDefaults(RagNarokLobbyHub, {
-        id: "ragnaroks-lobby-hub",
-        classes: ["ragnaroks-lobby"],
-        title: "RagNarok's Lobby",
-        template: RagNarokLobby.templatePath("control-hub.hbs"),
+    : mergeDefaults(RNKLobbyHub, {
+        id: "rnk-lobby-hub",
+        classes: ["rnk-lobby"],
+        title: "RNK Lobby",
+        template: RNKLobby.templatePath("control-hub.hbs"),
         width: 820,
         height: "auto",
         resizable: true
@@ -1864,7 +1864,7 @@ class RagNarokLobbyHub extends RenderableApplicationBase {
 
   static PARTS = USE_APPLICATION_V2
     ? {
-        body: { template: RagNarokLobby.templatePath("control-hub.hbs") }
+        body: { template: RNKLobby.templatePath("control-hub.hbs") }
       }
     : undefined;
 
@@ -1875,43 +1875,79 @@ class RagNarokLobbyHub extends RenderableApplicationBase {
   }
 
   getData() {
-    const countdown = RagNarokLobby.currentState.countdown;
-    let statusDetails = "Ready for players.";
-    if (RagNarokLobby.currentState.isActive && countdown?.isActive) {
+    const countdown = RNKLobby.currentState.countdown;
+    let statusDetails = "Players are on the live scene. Activate the overlay when you need a pause.";
+    if (RNKLobby.currentState.isActive && countdown?.isActive) {
       const remaining = Math.max(0, countdown.endTime - Date.now());
       const minutes = Math.ceil(remaining / 60000);
-      statusDetails = `${countdown.message || "Maintenance"} ~ ${minutes} min remaining`;
-    } else if (RagNarokLobby.currentState.isActive) {
+      const countdownLabel = countdown.message?.trim() || "Maintenance";
+      const plural = minutes === 1 ? "" : "s";
+      statusDetails = `${countdownLabel} in about ${minutes} minute${plural}`;
+    } else if (RNKLobby.currentState.isActive) {
       statusDetails = "Players see the maintenance overlay.";
     }
 
     const controls = [
-      { action: "switchboard", label: "Lobby Switchboard", icon: "fas fa-toggle-on" },
-      { action: "appearance", label: "Appearance", icon: "fas fa-palette" },
-      { action: "presets", label: "Presets", icon: "fas fa-star" },
-      { action: "countdown", label: "Countdown", icon: "fas fa-hourglass-half" },
-      { action: "polls", label: "Polls & Ready Checks", icon: "fas fa-poll" },
-      { action: "chat-monitor", label: "Chat Monitor", icon: "fas fa-comments" },
-      { action: "analytics", label: "Analytics", icon: "fas fa-chart-line" },
-      { action: "help", label: "Help Guide", icon: "fas fa-question-circle" }
+      {
+        action: "switchboard",
+        label: "Lobby Switchboard",
+        icon: "fas fa-toggle-on",
+        description: "Toggle the overlay, enable GM preview, and send broadcasts."
+      },
+      {
+        action: "appearance",
+        label: "Appearance",
+        icon: "fas fa-palette",
+        description: "Adjust imagery, accent colors, fonts, and messaging."
+      },
+      {
+        action: "presets",
+        label: "Presets",
+        icon: "fas fa-star",
+        description: "Save curated looks and swap between your favorites instantly."
+      },
+      {
+        action: "countdown",
+        label: "Countdown",
+        icon: "fas fa-hourglass-half",
+        description: "Start automated timers, macros, and reminders for returns."
+      },
+      {
+        action: "polls",
+        label: "Polls & Ready Checks",
+        icon: "fas fa-poll",
+        description: "Engage the table with quick polls, votes, and readiness checks."
+      },
+      {
+        action: "chat-monitor",
+        label: "Chat Monitor",
+        icon: "fas fa-comments",
+        description: "Review and moderate lobby chat history while you prep."
+      },
+      {
+        action: "analytics",
+        label: "Analytics",
+        icon: "fas fa-chart-line",
+        description: "Track uptime, countdown usage, and engagement patterns."
+      },
+      {
+        action: "help",
+        label: "Help Guide",
+        icon: "fas fa-question-circle",
+        description: "Explore tips, workflows, and FAQs for mastering the hub."
+      }
     ];
 
-    const midpoint = Math.ceil(controls.length / 2);
-    const leftControls = controls.slice(0, midpoint);
-    const rightControls = controls.slice(midpoint);
-
-    const customImage = RagNarokLobby.currentState.customImage ?? "";
-    const resolvedImagePath = RagNarokLobby.resolveImagePath(customImage);
+    const customImage = RNKLobby.currentState.customImage ?? "";
+    const resolvedImagePath = RNKLobby.resolveImagePath(customImage);
     const hubImage = globalThis?.foundry?.utils?.getRoute
       ? foundry.utils.getRoute(resolvedImagePath)
       : resolvedImagePath;
 
     return {
-      isActive: RagNarokLobby.currentState.isActive,
+      isActive: RNKLobby.currentState.isActive,
       statusDetails,
       controls,
-      controlsLeft: leftControls,
-      controlsRight: rightControls,
       hubImage
     };
   }
@@ -1936,39 +1972,39 @@ class RagNarokLobbyHub extends RenderableApplicationBase {
     const action = event.currentTarget.dataset.action;
     switch (action) {
       case "switchboard":
-        if (!RagNarokLobby.apps.switchboard) RagNarokLobby.apps.switchboard = new RagNarokLobbyToggleWindow();
-        RagNarokLobby.apps.switchboard.render(true);
+        if (!RNKLobby.apps.switchboard) RNKLobby.apps.switchboard = new RNKLobbyToggleWindow();
+        RNKLobby.apps.switchboard.render(true);
         break;
       case "appearance":
-        if (!RagNarokLobby.apps.appearance) RagNarokLobby.apps.appearance = new RagNarokLobbyAppearanceForm();
-        RagNarokLobby.apps.appearance.render(true);
+        if (!RNKLobby.apps.appearance) RNKLobby.apps.appearance = new RNKLobbyAppearanceForm();
+        RNKLobby.apps.appearance.render(true);
         break;
       case "countdown":
-        if (!RagNarokLobby.apps.countdown) RagNarokLobby.apps.countdown = new RagNarokLobbyCountdownForm();
-        RagNarokLobby.apps.countdown.render(true);
+        if (!RNKLobby.apps.countdown) RNKLobby.apps.countdown = new RNKLobbyCountdownForm();
+        RNKLobby.apps.countdown.render(true);
         break;
       case "presets":
-        if (!RagNarokLobby.apps.presets) RagNarokLobby.apps.presets = new RagNarokLobbyPresetsManager();
-        RagNarokLobby.apps.presets.render(true);
+        if (!RNKLobby.apps.presets) RNKLobby.apps.presets = new RNKLobbyPresetsManager();
+        RNKLobby.apps.presets.render(true);
         break;
       case "polls":
-        if (!RagNarokLobby.apps.pollManager) RagNarokLobby.apps.pollManager = new RagNarokLobbyPollManager();
-        RagNarokLobby.apps.pollManager.render(true);
+        if (!RNKLobby.apps.pollManager) RNKLobby.apps.pollManager = new RNKLobbyPollManager();
+        RNKLobby.apps.pollManager.render(true);
         break;
       case "chat-monitor":
-        if (!RagNarokLobby.apps.chatMonitor) RagNarokLobby.apps.chatMonitor = new RagNarokLobbyChatMonitor();
-        RagNarokLobby.apps.chatMonitor.render(true);
+        if (!RNKLobby.apps.chatMonitor) RNKLobby.apps.chatMonitor = new RNKLobbyChatMonitor();
+        RNKLobby.apps.chatMonitor.render(true);
         break;
       case "analytics":
-        if (!RagNarokLobby.apps.analytics) RagNarokLobby.apps.analytics = new RagNarokLobbyAnalyticsPanel();
-        RagNarokLobby.apps.analytics.render(true);
+        if (!RNKLobby.apps.analytics) RNKLobby.apps.analytics = new RNKLobbyAnalyticsPanel();
+        RNKLobby.apps.analytics.render(true);
         break;
       case "help":
-        if (!RagNarokLobby.apps.help) RagNarokLobby.apps.help = new RagNarokLobbyHelpDialog();
-        RagNarokLobby.apps.help.render(true);
+        if (!RNKLobby.apps.help) RNKLobby.apps.help = new RNKLobbyHelpDialog();
+        RNKLobby.apps.help.render(true);
         break;
       case "refresh-state":
-        RagNarokLobby.requestCurrentState();
+        RNKLobby.requestCurrentState();
         ui.notifications?.info("Requested latest lobby state");
         break;
       case "close":
@@ -1980,13 +2016,13 @@ class RagNarokLobbyHub extends RenderableApplicationBase {
   }
 }
 
-class RagNarokLobbyToggleWindow extends RenderableApplicationBase {
+class RNKLobbyToggleWindow extends RenderableApplicationBase {
   static get defaultOptions() {
     return mergeDefaults(this, {
-      id: "ragnaroks-lobby-switchboard",
-      classes: ["ragnaroks-lobby"],
+      id: "rnk-lobby-switchboard",
+      classes: ["rnk-lobby"],
       title: "Lobby Switchboard",
-      template: RagNarokLobby.templatePath("toggle-controls.hbs"),
+      template: RNKLobby.templatePath("toggle-controls.hbs"),
       width: 420,
       height: "auto",
       resizable: false
@@ -1994,17 +2030,17 @@ class RagNarokLobbyToggleWindow extends RenderableApplicationBase {
   }
 
   static DEFAULT_OPTIONS = USE_APPLICATION_V2
-    ? mergeDefaults(RagNarokLobbyToggleWindow, {
-        id: "ragnaroks-lobby-switchboard",
-        classes: ["ragnaroks-lobby"],
+    ? mergeDefaults(RNKLobbyToggleWindow, {
+        id: "rnk-lobby-switchboard",
+        classes: ["rnk-lobby"],
         window: { title: "Lobby Switchboard", resizable: false },
         position: { width: 420 }
       })
-    : mergeDefaults(RagNarokLobbyToggleWindow, {
-        id: "ragnaroks-lobby-switchboard",
-        classes: ["ragnaroks-lobby"],
+    : mergeDefaults(RNKLobbyToggleWindow, {
+        id: "rnk-lobby-switchboard",
+        classes: ["rnk-lobby"],
         title: "Lobby Switchboard",
-        template: RagNarokLobby.templatePath("toggle-controls.hbs"),
+        template: RNKLobby.templatePath("toggle-controls.hbs"),
         width: 420,
         height: "auto",
         resizable: false
@@ -2012,7 +2048,7 @@ class RagNarokLobbyToggleWindow extends RenderableApplicationBase {
 
   static PARTS = USE_APPLICATION_V2
     ? {
-        body: { template: RagNarokLobby.templatePath("toggle-controls.hbs") }
+        body: { template: RNKLobby.templatePath("toggle-controls.hbs") }
       }
     : undefined;
 
@@ -2024,10 +2060,10 @@ class RagNarokLobbyToggleWindow extends RenderableApplicationBase {
 
   getData() {
     return {
-      isActive: RagNarokLobby.currentState.isActive,
+      isActive: RNKLobby.currentState.isActive,
       gmPreview: game.settings.get(LOBBY_MODULE_ID, GM_PREVIEW_KEY),
       enableSound: game.settings.get(LOBBY_MODULE_ID, ENABLE_SOUND_KEY),
-      broadcastDefault: RagNarokLobby.currentState.isActive ? "Lobby returning soon." : "Lobby entering maintenance mode."
+      broadcastDefault: RNKLobby.currentState.isActive ? "Lobby returning soon." : "Lobby entering maintenance mode."
     };
   }
 
@@ -2038,16 +2074,16 @@ class RagNarokLobbyToggleWindow extends RenderableApplicationBase {
   }
 }
 
-RagNarokLobbyToggleWindow.prototype._onRender = function _onRender(context, options) {
+RNKLobbyToggleWindow.prototype._onRender = function _onRender(context, options) {
   RenderableApplicationBase.prototype._onRender?.call(this, context, options);
   if (!USE_APPLICATION_V2) return;
   this.bindControls(this.element);
 };
 
-RagNarokLobbyToggleWindow.prototype.bindControls = function bindControls(target) {
+RNKLobbyToggleWindow.prototype.bindControls = function bindControls(target) {
   addEventListenerCompat(target, '[data-action="toggle"]', "click", async () => {
-    const nextState = !RagNarokLobby.currentState.isActive;
-    await RagNarokLobby.handleLobbyToggle(nextState, { source: "switchboard" });
+    const nextState = !RNKLobby.currentState.isActive;
+    await RNKLobby.handleLobbyToggle(nextState, { source: "switchboard" });
     this.render(false);
   });
 
@@ -2062,44 +2098,44 @@ RagNarokLobbyToggleWindow.prototype.bindControls = function bindControls(target)
   addEventListenerCompat(target, '[data-action="broadcast"]', "click", () => {
     const input = getFirstElement(target, '[name="broadcast"]');
     const text = input ? input.value : undefined;
-    RagNarokLobby.sendBroadcastMessage(text);
+    RNKLobby.sendBroadcastMessage(text);
   });
 };
 
 function odSi9gna8l2() {}
 
-class RagNarokLobbyAppearanceForm extends RenderableFormApplicationBase {
+class RNKLobbyAppearanceForm extends RenderableFormApplicationBase {
   static get defaultOptions() {
     return mergeDefaults(this, {
-      id: "ragnaroks-lobby-appearance",
-      classes: ["ragnaroks-lobby"],
+      id: "rnk-lobby-appearance",
+      classes: ["rnk-lobby"],
       title: "Lobby Appearance",
-      template: RagNarokLobby.templatePath("appearance-form.hbs"),
+      template: RNKLobby.templatePath("appearance-form.hbs"),
       width: 500,
       height: "auto"
     });
   }
 
   static DEFAULT_OPTIONS = USE_FORM_APPLICATION_V2
-    ? mergeDefaults(RagNarokLobbyAppearanceForm, {
-        id: "ragnaroks-lobby-appearance",
-        classes: ["ragnaroks-lobby"],
+    ? mergeDefaults(RNKLobbyAppearanceForm, {
+        id: "rnk-lobby-appearance",
+        classes: ["rnk-lobby"],
         tag: "form",
         window: { title: "Lobby Appearance", resizable: true },
         position: { width: 500 }
       })
-    : mergeDefaults(RagNarokLobbyAppearanceForm, {
-        id: "ragnaroks-lobby-appearance",
-        classes: ["ragnaroks-lobby"],
+    : mergeDefaults(RNKLobbyAppearanceForm, {
+        id: "rnk-lobby-appearance",
+        classes: ["rnk-lobby"],
         title: "Lobby Appearance",
-        template: RagNarokLobby.templatePath("appearance-form.hbs"),
+        template: RNKLobby.templatePath("appearance-form.hbs"),
         width: 500,
         height: "auto"
       });
 
   static PARTS = USE_FORM_APPLICATION_V2
     ? {
-        form: { template: RagNarokLobby.templatePath("appearance-form.hbs") }
+        form: { template: RNKLobby.templatePath("appearance-form.hbs") }
       }
     : undefined;
 
@@ -2110,14 +2146,14 @@ class RagNarokLobbyAppearanceForm extends RenderableFormApplicationBase {
   }
 
   getData() {
-    const appearance = RagNarokLobby.getAppearanceSettings();
+    const appearance = RNKLobby.getAppearanceSettings();
     return {
       settings: {
         ...appearance,
         customMessage: game.settings.get(LOBBY_MODULE_ID, CUSTOM_MESSAGE_KEY) ?? "",
         customImage: game.settings.get(LOBBY_MODULE_ID, CUSTOM_IMAGE_KEY) ?? ""
       },
-      themes: RagNarokLobby.getThemeOptions()
+      themes: RNKLobby.getThemeOptions()
     };
   }
 
@@ -2133,8 +2169,8 @@ class RagNarokLobbyAppearanceForm extends RenderableFormApplicationBase {
     const customImage = values.customImage ?? "";
     await game.settings.set(LOBBY_MODULE_ID, CUSTOM_MESSAGE_KEY, customMessage);
     await game.settings.set(LOBBY_MODULE_ID, CUSTOM_IMAGE_KEY, customImage);
-    RagNarokLobby.currentState.customMessage = customMessage;
-    RagNarokLobby.currentState.customImage = customImage;
+    RNKLobby.currentState.customMessage = customMessage;
+    RNKLobby.currentState.customImage = customImage;
 
     const appearance = {
       customTitle: values.customTitle ?? "",
@@ -2146,17 +2182,17 @@ class RagNarokLobbyAppearanceForm extends RenderableFormApplicationBase {
       bodyFont: values.bodyFont?.trim() || DEFAULT_APPEARANCE.bodyFont
     };
 
-    await RagNarokLobby.setAppearanceSettings(appearance);
+    await RNKLobby.setAppearanceSettings(appearance);
   }
 }
 
-RagNarokLobbyAppearanceForm.prototype._onRender = function _onRender(context, options) {
+RNKLobbyAppearanceForm.prototype._onRender = function _onRender(context, options) {
   RenderableFormApplicationBase.prototype._onRender?.call(this, context, options);
   if (!USE_FORM_APPLICATION_V2) return;
   this.bindControls(this.element);
 };
 
-RagNarokLobbyAppearanceForm.prototype.bindControls = function bindControls(target) {
+RNKLobbyAppearanceForm.prototype.bindControls = function bindControls(target) {
   addEventListenerCompat(target, "input[type=range]", "input", (event) => {
     const range = event.currentTarget;
     if (range?.nextElementSibling) range.nextElementSibling.textContent = range.value;
@@ -2164,48 +2200,48 @@ RagNarokLobbyAppearanceForm.prototype.bindControls = function bindControls(targe
 
   addEventListenerCompat(target, '[data-action="reset-defaults"]', "click", async (event) => {
     event.preventDefault();
-    await RagNarokLobby.resetAppearanceToDefaults();
+    await RNKLobby.resetAppearanceToDefaults();
     this.render(false);
   });
 
   addEventListenerCompat(target, '[data-theme-id]', "click", async (event) => {
     const themeId = event.currentTarget?.dataset?.themeId;
-    if (themeId) await RagNarokLobby.applyTheme(themeId);
+    if (themeId) await RNKLobby.applyTheme(themeId);
   });
 };
 
-class RagNarokLobbyCountdownForm extends RenderableFormApplicationBase {
+class RNKLobbyCountdownForm extends RenderableFormApplicationBase {
   static get defaultOptions() {
     return mergeDefaults(this, {
-      id: "ragnaroks-lobby-countdown",
-      classes: ["ragnaroks-lobby"],
+      id: "rnk-lobby-countdown",
+      classes: ["rnk-lobby"],
       title: "Lobby Countdown",
-      template: RagNarokLobby.templatePath("countdown-form.hbs"),
+      template: RNKLobby.templatePath("countdown-form.hbs"),
       width: 420,
       height: "auto"
     });
   }
 
   static DEFAULT_OPTIONS = USE_FORM_APPLICATION_V2
-    ? mergeDefaults(RagNarokLobbyCountdownForm, {
-        id: "ragnaroks-lobby-countdown",
-        classes: ["ragnaroks-lobby"],
+    ? mergeDefaults(RNKLobbyCountdownForm, {
+        id: "rnk-lobby-countdown",
+        classes: ["rnk-lobby"],
         tag: "form",
         window: { title: "Lobby Countdown", resizable: true },
         position: { width: 420 }
       })
-    : mergeDefaults(RagNarokLobbyCountdownForm, {
-        id: "ragnaroks-lobby-countdown",
-        classes: ["ragnaroks-lobby"],
+    : mergeDefaults(RNKLobbyCountdownForm, {
+        id: "rnk-lobby-countdown",
+        classes: ["rnk-lobby"],
         title: "Lobby Countdown",
-        template: RagNarokLobby.templatePath("countdown-form.hbs"),
+        template: RNKLobby.templatePath("countdown-form.hbs"),
         width: 420,
         height: "auto"
       });
 
   static PARTS = USE_FORM_APPLICATION_V2
     ? {
-        form: { template: RagNarokLobby.templatePath("countdown-form.hbs") }
+        form: { template: RNKLobby.templatePath("countdown-form.hbs") }
       }
     : undefined;
 
@@ -2219,9 +2255,9 @@ class RagNarokLobbyCountdownForm extends RenderableFormApplicationBase {
     return {
       state: {
         ...DEFAULT_COUNTDOWN,
-        ...RagNarokLobby.currentState.countdown,
-        duration: RagNarokLobby.currentState.countdown.duration || 15,
-        message: RagNarokLobby.currentState.countdown.message || DEFAULT_COUNTDOWN.message
+        ...RNKLobby.currentState.countdown,
+        duration: RNKLobby.currentState.countdown.duration || 15,
+        message: RNKLobby.currentState.countdown.message || DEFAULT_COUNTDOWN.message
       },
       macros: (game.macros?.contents ?? []).map((macro) => ({
         id: macro.id,
@@ -2253,7 +2289,7 @@ class RagNarokLobbyCountdownForm extends RenderableFormApplicationBase {
       chatMessage: values.actions?.chatMessage?.trim() || ""
     };
 
-    await RagNarokLobby.setCountdownState({
+    await RNKLobby.setCountdownState({
       isActive: true,
       duration: minutes,
       endTime,
@@ -2267,28 +2303,28 @@ class RagNarokLobbyCountdownForm extends RenderableFormApplicationBase {
   }
 }
 
-RagNarokLobbyCountdownForm.prototype._onRender = function _onRender(context, options) {
+RNKLobbyCountdownForm.prototype._onRender = function _onRender(context, options) {
   RenderableFormApplicationBase.prototype._onRender?.call(this, context, options);
   if (!USE_FORM_APPLICATION_V2) return;
   this.bindControls(this.element);
 };
 
-RagNarokLobbyCountdownForm.prototype.bindControls = function bindControls(target) {
+RNKLobbyCountdownForm.prototype.bindControls = function bindControls(target) {
   addEventListenerCompat(target, '[data-action="clear"]', "click", async (event) => {
     event.preventDefault();
-    await RagNarokLobby.setCountdownState({ ...DEFAULT_COUNTDOWN });
+    await RNKLobby.setCountdownState({ ...DEFAULT_COUNTDOWN });
     ui.notifications?.info("Countdown cleared");
     this.render(false);
   });
 };
 
-class RagNarokLobbyChatMonitor extends RenderableApplicationBase {
+class RNKLobbyChatMonitor extends RenderableApplicationBase {
   static get defaultOptions() {
     return mergeDefaults(this, {
-      id: "ragnaroks-lobby-chat-monitor",
-      classes: ["ragnaroks-lobby"],
+      id: "rnk-lobby-chat-monitor",
+      classes: ["rnk-lobby"],
       title: "Lobby Chat Monitor",
-      template: RagNarokLobby.templatePath("chat-monitor.hbs"),
+      template: RNKLobby.templatePath("chat-monitor.hbs"),
       width: 480,
       height: 520,
       resizable: true
@@ -2296,17 +2332,17 @@ class RagNarokLobbyChatMonitor extends RenderableApplicationBase {
   }
 
   static DEFAULT_OPTIONS = USE_APPLICATION_V2
-    ? mergeDefaults(RagNarokLobbyChatMonitor, {
-        id: "ragnaroks-lobby-chat-monitor",
-        classes: ["ragnaroks-lobby"],
+    ? mergeDefaults(RNKLobbyChatMonitor, {
+        id: "rnk-lobby-chat-monitor",
+        classes: ["rnk-lobby"],
         window: { title: "Lobby Chat Monitor", resizable: true },
         position: { width: 480, height: 520 }
       })
-    : mergeDefaults(RagNarokLobbyChatMonitor, {
-        id: "ragnaroks-lobby-chat-monitor",
-        classes: ["ragnaroks-lobby"],
+    : mergeDefaults(RNKLobbyChatMonitor, {
+        id: "rnk-lobby-chat-monitor",
+        classes: ["rnk-lobby"],
         title: "Lobby Chat Monitor",
-        template: RagNarokLobby.templatePath("chat-monitor.hbs"),
+        template: RNKLobby.templatePath("chat-monitor.hbs"),
         width: 480,
         height: 520,
         resizable: true
@@ -2314,7 +2350,7 @@ class RagNarokLobbyChatMonitor extends RenderableApplicationBase {
 
   static PARTS = USE_APPLICATION_V2
     ? {
-        body: { template: RagNarokLobby.templatePath("chat-monitor.hbs") }
+        body: { template: RNKLobby.templatePath("chat-monitor.hbs") }
       }
     : undefined;
 
@@ -2325,7 +2361,7 @@ class RagNarokLobbyChatMonitor extends RenderableApplicationBase {
   }
 
   getData() {
-    const messages = RagNarokLobby.chatMessages.map((entry) => ({
+    const messages = RNKLobby.chatMessages.map((entry) => ({
       ...entry,
       iso: new Date(entry.timestamp).toISOString(),
       time: new Date(entry.timestamp).toLocaleTimeString(),
@@ -2341,17 +2377,17 @@ class RagNarokLobbyChatMonitor extends RenderableApplicationBase {
   }
 }
 
-RagNarokLobbyChatMonitor.prototype._onRender = function _onRender(context, options) {
+RNKLobbyChatMonitor.prototype._onRender = function _onRender(context, options) {
   RenderableApplicationBase.prototype._onRender?.call(this, context, options);
   if (!USE_APPLICATION_V2) return;
   this.bindControls(this.element);
 };
 
-RagNarokLobbyChatMonitor.prototype.bindControls = function bindControls(target) {
-  addEventListenerCompat(target, '[data-action="export"]', "click", () => RagNarokLobby.exportChatHistory());
+RNKLobbyChatMonitor.prototype.bindControls = function bindControls(target) {
+  addEventListenerCompat(target, '[data-action="export"]', "click", () => RNKLobby.exportChatHistory());
 
   addEventListenerCompat(target, '[data-action="clear"]', "click", async () => {
-    await RagNarokLobby.clearChatMessages();
+    await RNKLobby.clearChatMessages();
     this.render(false);
   });
 
@@ -2360,37 +2396,37 @@ RagNarokLobbyChatMonitor.prototype.bindControls = function bindControls(target) 
 
 function odFe_nce198_2() {}
 
-class RagNarokLobbyHelpDialog extends RenderableApplicationBase {
+class RNKLobbyHelpDialog extends RenderableApplicationBase {
   static get defaultOptions() {
     return mergeDefaults(this, {
-      id: "ragnaroks-lobby-help",
-      classes: ["ragnaroks-lobby"],
+      id: "rnk-lobby-help",
+      classes: ["rnk-lobby"],
       title: "Lobby Help Guide",
-      template: RagNarokLobby.templatePath("help-dialog.hbs"),
+      template: RNKLobby.templatePath("help-dialog.hbs"),
       width: 420,
       height: "auto"
     });
   }
 
   static DEFAULT_OPTIONS = USE_APPLICATION_V2
-    ? mergeDefaults(RagNarokLobbyHelpDialog, {
-        id: "ragnaroks-lobby-help",
-        classes: ["ragnaroks-lobby"],
+    ? mergeDefaults(RNKLobbyHelpDialog, {
+        id: "rnk-lobby-help",
+        classes: ["rnk-lobby"],
         window: { title: "Lobby Help Guide", resizable: true },
         position: { width: 420 }
       })
-    : mergeDefaults(RagNarokLobbyHelpDialog, {
-        id: "ragnaroks-lobby-help",
-        classes: ["ragnaroks-lobby"],
+    : mergeDefaults(RNKLobbyHelpDialog, {
+        id: "rnk-lobby-help",
+        classes: ["rnk-lobby"],
         title: "Lobby Help Guide",
-        template: RagNarokLobby.templatePath("help-dialog.hbs"),
+        template: RNKLobby.templatePath("help-dialog.hbs"),
         width: 420,
         height: "auto"
       });
 
   static PARTS = USE_APPLICATION_V2
     ? {
-        body: { template: RagNarokLobby.templatePath("help-dialog.hbs") }
+        body: { template: RNKLobby.templatePath("help-dialog.hbs") }
       }
     : undefined;
 
@@ -2401,13 +2437,13 @@ class RagNarokLobbyHelpDialog extends RenderableApplicationBase {
   }
 }
 
-class RagNarokLobbyPresetsManager extends RenderableApplicationBase {
+class RNKLobbyPresetsManager extends RenderableApplicationBase {
   static get defaultOptions() {
     return mergeDefaults(this, {
-      id: "ragnaroks-lobby-presets",
-      classes: ["ragnaroks-lobby"],
+      id: "rnk-lobby-presets",
+      classes: ["rnk-lobby"],
       title: "Lobby Presets",
-      template: RagNarokLobby.templatePath("presets-manager.hbs"),
+      template: RNKLobby.templatePath("presets-manager.hbs"),
       width: 540,
       height: "auto",
       resizable: true
@@ -2415,17 +2451,17 @@ class RagNarokLobbyPresetsManager extends RenderableApplicationBase {
   }
 
   static DEFAULT_OPTIONS = USE_APPLICATION_V2
-    ? mergeDefaults(RagNarokLobbyPresetsManager, {
-        id: "ragnaroks-lobby-presets",
-        classes: ["ragnaroks-lobby"],
+    ? mergeDefaults(RNKLobbyPresetsManager, {
+        id: "rnk-lobby-presets",
+        classes: ["rnk-lobby"],
         window: { title: "Lobby Presets", resizable: true },
         position: { width: 540 }
       })
-    : mergeDefaults(RagNarokLobbyPresetsManager, {
-        id: "ragnaroks-lobby-presets",
-        classes: ["ragnaroks-lobby"],
+    : mergeDefaults(RNKLobbyPresetsManager, {
+        id: "rnk-lobby-presets",
+        classes: ["rnk-lobby"],
         title: "Lobby Presets",
-        template: RagNarokLobby.templatePath("presets-manager.hbs"),
+        template: RNKLobby.templatePath("presets-manager.hbs"),
         width: 540,
         height: "auto",
         resizable: true
@@ -2433,7 +2469,7 @@ class RagNarokLobbyPresetsManager extends RenderableApplicationBase {
 
   static PARTS = USE_APPLICATION_V2
     ? {
-        body: { template: RagNarokLobby.templatePath("presets-manager.hbs") }
+        body: { template: RNKLobby.templatePath("presets-manager.hbs") }
       }
     : undefined;
 
@@ -2444,7 +2480,7 @@ class RagNarokLobbyPresetsManager extends RenderableApplicationBase {
   }
 
   getData() {
-    const presets = RagNarokLobby.getPresets().map((preset) => ({
+    const presets = RNKLobby.getPresets().map((preset) => ({
       ...preset,
       savedAtLabel: preset.savedAt ? new Date(preset.savedAt).toLocaleString() : "Unknown",
       hasCountdown: Boolean(preset.countdownTemplate)
@@ -2463,51 +2499,51 @@ class RagNarokLobbyPresetsManager extends RenderableApplicationBase {
   }
 }
 
-RagNarokLobbyPresetsManager.prototype._onRender = function _onRender(context, options) {
+RNKLobbyPresetsManager.prototype._onRender = function _onRender(context, options) {
   RenderableApplicationBase.prototype._onRender?.call(this, context, options);
   if (!USE_APPLICATION_V2) return;
   this.bindControls(this.element);
 };
 
-RagNarokLobbyPresetsManager.prototype.bindControls = function bindControls(target) {
+RNKLobbyPresetsManager.prototype.bindControls = function bindControls(target) {
   addEventListenerCompat(target, 'form[data-form="new-preset"]', "submit", async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
     const name = formData.get("presetName");
     const includeCountdown = formData.get("includeCountdown") === "on";
-    await RagNarokLobby.savePreset(name, { includeCountdown });
+    await RNKLobby.savePreset(name, { includeCountdown });
     form.reset();
     this.render(false);
   });
 
   addEventListenerCompat(target, '[data-action="apply-preset"]', "click", async (event) => {
     const id = event.currentTarget.dataset.id;
-    await RagNarokLobby.applyPreset(id);
+    await RNKLobby.applyPreset(id);
   });
 
   addEventListenerCompat(target, '[data-action="delete-preset"]', "click", async (event) => {
     const id = event.currentTarget.dataset.id;
-    const preset = RagNarokLobby.getPresets().find((entry) => entry.id === id);
+    const preset = RNKLobby.getPresets().find((entry) => entry.id === id);
     if (!preset) return;
-    const safeName = RagNarokLobby.escapeHTML(preset.name);
+    const safeName = RNKLobby.escapeHTML(preset.name);
     const confirmed = await Dialog.confirm({
       title: "Delete Preset",
       content: `<p>Are you sure you want to delete <strong>${safeName}</strong>?</p>`
     });
     if (!confirmed) return;
-    await RagNarokLobby.deletePreset(id);
+    await RNKLobby.deletePreset(id);
     this.render(false);
   });
 };
 
-class RagNarokLobbyPollManager extends RenderableApplicationBase {
+class RNKLobbyPollManager extends RenderableApplicationBase {
   static get defaultOptions() {
     return mergeDefaults(this, {
-      id: "ragnaroks-lobby-poll-manager",
-      classes: ["ragnaroks-lobby"],
+      id: "rnk-lobby-poll-manager",
+      classes: ["rnk-lobby"],
       title: "Lobby Polls & Ready Checks",
-      template: RagNarokLobby.templatePath("poll-manager.hbs"),
+      template: RNKLobby.templatePath("poll-manager.hbs"),
       width: 520,
       height: "auto",
       resizable: true
@@ -2515,17 +2551,17 @@ class RagNarokLobbyPollManager extends RenderableApplicationBase {
   }
 
   static DEFAULT_OPTIONS = USE_APPLICATION_V2
-    ? mergeDefaults(RagNarokLobbyPollManager, {
-        id: "ragnaroks-lobby-poll-manager",
-        classes: ["ragnaroks-lobby"],
+    ? mergeDefaults(RNKLobbyPollManager, {
+        id: "rnk-lobby-poll-manager",
+        classes: ["rnk-lobby"],
         window: { title: "Lobby Polls & Ready Checks", resizable: true },
         position: { width: 520 }
       })
-    : mergeDefaults(RagNarokLobbyPollManager, {
-        id: "ragnaroks-lobby-poll-manager",
-        classes: ["ragnaroks-lobby"],
+    : mergeDefaults(RNKLobbyPollManager, {
+        id: "rnk-lobby-poll-manager",
+        classes: ["rnk-lobby"],
         title: "Lobby Polls & Ready Checks",
-        template: RagNarokLobby.templatePath("poll-manager.hbs"),
+        template: RNKLobby.templatePath("poll-manager.hbs"),
         width: 520,
         height: "auto",
         resizable: true
@@ -2533,7 +2569,7 @@ class RagNarokLobbyPollManager extends RenderableApplicationBase {
 
   static PARTS = USE_APPLICATION_V2
     ? {
-        body: { template: RagNarokLobby.templatePath("poll-manager.hbs") }
+        body: { template: RNKLobby.templatePath("poll-manager.hbs") }
       }
     : undefined;
 
@@ -2544,8 +2580,8 @@ class RagNarokLobbyPollManager extends RenderableApplicationBase {
   }
 
   getData() {
-    const poll = RagNarokLobby.pollState;
-    const tallies = RagNarokLobby.computePollTallies(poll);
+    const poll = RNKLobby.pollState;
+    const tallies = RNKLobby.computePollTallies(poll);
     const totalVotes = Object.values(tallies).reduce((sum, count) => sum + count, 0);
     const options = (poll.options || []).map((opt) => ({
       id: opt.id,
@@ -2554,7 +2590,7 @@ class RagNarokLobbyPollManager extends RenderableApplicationBase {
       percentage: totalVotes ? Math.round(((tallies[opt.id] ?? 0) / totalVotes) * 100) : 0
     }));
 
-    const history = (RagNarokLobby.analytics.pollHistory || [])
+    const history = (RNKLobby.analytics.pollHistory || [])
       .slice()
       .reverse()
       .slice(0, 8)
@@ -2585,13 +2621,13 @@ class RagNarokLobbyPollManager extends RenderableApplicationBase {
   }
 }
 
-RagNarokLobbyPollManager.prototype._onRender = function _onRender(context, options) {
+RNKLobbyPollManager.prototype._onRender = function _onRender(context, options) {
   RenderableApplicationBase.prototype._onRender?.call(this, context, options);
   if (!USE_APPLICATION_V2) return;
   this.bindControls(this.element);
 };
 
-RagNarokLobbyPollManager.prototype.bindControls = function bindControls(target) {
+RNKLobbyPollManager.prototype.bindControls = function bindControls(target) {
   addEventListenerCompat(target, 'form[data-form="create-poll"]', "submit", async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -2602,7 +2638,7 @@ RagNarokLobbyPollManager.prototype.bindControls = function bindControls(target) 
       .split(/\r?\n/)
       .map((line) => line.trim())
       .filter(Boolean);
-    const created = await RagNarokLobby.createPoll({ question, options });
+    const created = await RNKLobby.createPoll({ question, options });
     if (created) {
       form.reset();
       this.render(false);
@@ -2610,20 +2646,20 @@ RagNarokLobbyPollManager.prototype.bindControls = function bindControls(target) 
   });
 
   addEventListenerCompat(target, '[data-action="close-poll"]', "click", async () => {
-    await RagNarokLobby.closePoll();
+    await RNKLobby.closePoll();
     this.render(false);
   });
 
   addEventListenerCompat(target, '[data-action="refresh-poll"]', "click", () => this.render(false));
 };
 
-class RagNarokLobbyAnalyticsPanel extends RenderableApplicationBase {
+class RNKLobbyAnalyticsPanel extends RenderableApplicationBase {
   static get defaultOptions() {
     return mergeDefaults(this, {
-      id: "ragnaroks-lobby-analytics",
-      classes: ["ragnaroks-lobby"],
+      id: "rnk-lobby-analytics",
+      classes: ["rnk-lobby"],
       title: "Lobby Analytics",
-      template: RagNarokLobby.templatePath("analytics-panel.hbs"),
+      template: RNKLobby.templatePath("analytics-panel.hbs"),
       width: 600,
       height: 620,
       resizable: true
@@ -2631,17 +2667,17 @@ class RagNarokLobbyAnalyticsPanel extends RenderableApplicationBase {
   }
 
   static DEFAULT_OPTIONS = USE_APPLICATION_V2
-    ? mergeDefaults(RagNarokLobbyAnalyticsPanel, {
-        id: "ragnaroks-lobby-analytics",
-        classes: ["ragnaroks-lobby"],
+    ? mergeDefaults(RNKLobbyAnalyticsPanel, {
+        id: "rnk-lobby-analytics",
+        classes: ["rnk-lobby"],
         window: { title: "Lobby Analytics", resizable: true },
         position: { width: 600, height: 620 }
       })
-    : mergeDefaults(RagNarokLobbyAnalyticsPanel, {
-        id: "ragnaroks-lobby-analytics",
-        classes: ["ragnaroks-lobby"],
+    : mergeDefaults(RNKLobbyAnalyticsPanel, {
+        id: "rnk-lobby-analytics",
+        classes: ["rnk-lobby"],
         title: "Lobby Analytics",
-        template: RagNarokLobby.templatePath("analytics-panel.hbs"),
+        template: RNKLobby.templatePath("analytics-panel.hbs"),
         width: 600,
         height: 620,
         resizable: true
@@ -2649,7 +2685,7 @@ class RagNarokLobbyAnalyticsPanel extends RenderableApplicationBase {
 
   static PARTS = USE_APPLICATION_V2
     ? {
-        body: { template: RagNarokLobby.templatePath("analytics-panel.hbs") }
+        body: { template: RNKLobby.templatePath("analytics-panel.hbs") }
       }
     : undefined;
 
@@ -2660,10 +2696,10 @@ class RagNarokLobbyAnalyticsPanel extends RenderableApplicationBase {
   }
 
   getData() {
-    const analytics = RagNarokLobby.analytics;
+    const analytics = RNKLobby.analytics;
     const totalMs = Number(analytics.totalActiveMs || 0);
     const totalMinutes = Math.round(totalMs / 60000);
-    const activeNowMs = RagNarokLobby.currentState.isActive && analytics.lastActivatedAt
+    const activeNowMs = RNKLobby.currentState.isActive && analytics.lastActivatedAt
       ? Date.now() - analytics.lastActivatedAt
       : 0;
 
@@ -2712,8 +2748,8 @@ class RagNarokLobbyAnalyticsPanel extends RenderableApplicationBase {
 
 function odShi9el82() {}
 
-RagNarokLobby.exportChatHistory = async function exportChatHistory() {
-  const text = RagNarokLobby.chatMessages
+RNKLobby.exportChatHistory = async function exportChatHistory() {
+  const text = RNKLobby.chatMessages
     .map((entry) => `[${new Date(entry.timestamp).toLocaleString()}] ${entry.author}: ${entry.text}`)
     .join("\n");
 
@@ -2721,7 +2757,7 @@ RagNarokLobby.exportChatHistory = async function exportChatHistory() {
     await navigator.clipboard.writeText(text);
     ui.notifications?.info("Lobby chat copied to clipboard");
   } catch (error) {
-    console.warn("RagNarok's Lobby | Clipboard export failed", error);
+    console.warn("RNK Lobby | Clipboard export failed", error);
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -2733,8 +2769,11 @@ RagNarokLobby.exportChatHistory = async function exportChatHistory() {
 };
 
 // Initialize module
-Hooks.on("init", () => RagNarokLobby.init());
-Hooks.on("ready", () => RagNarokLobby.ready());
+Hooks.once("init", () => RNKLobby.init());
+Hooks.once("ready", () => RNKLobby.ready());
 
 // Export for external access if needed
-window.RagNarokLobby = RagNarokLobby;
+window.RNKLobby = RNKLobby;
+
+
+

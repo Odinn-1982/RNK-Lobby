@@ -1,6 +1,6 @@
-/* RagNarok's Lobby - Enhanced Maintenance Overlay */
+﻿/* RNK Lobby - Enhanced Maintenance Overlay */
 
-#ragnaroks-lobby-overlay {
+#rnk-lobby-overlay {
   --lobby-accent: #ff6b6b;
   --lobby-overlay-opacity: 0.65;
   --lobby-blur: 12px;
@@ -18,11 +18,11 @@
   font-family: var(--lobby-font-body, "Roboto", "Segoe UI", sans-serif);
 }
 
-#ragnaroks-lobby-overlay::before {
+#rnk-lobby-overlay::before {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: var(--lobby-bg-image, url('modules/ragnaroks-lobby/assets/ragnaroks-codex.jpg'));
+  background-image: var(--lobby-bg-image, url('modules/rnk-lobby/assets/rnk-codex.jpg'));
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -30,7 +30,7 @@
   z-index: 1;
 }
 
-#ragnaroks-lobby-overlay::after {
+#rnk-lobby-overlay::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -39,12 +39,12 @@
   z-index: 2;
 }
 
-#ragnaroks-lobby-overlay.ragnaroks-lobby-active {
+#rnk-lobby-overlay.rnk-lobby-active {
   opacity: 1;
   visibility: visible;
 }
 
-.ragnaroks-lobby-content {
+.rnk-lobby-content {
   position: relative;
   z-index: 5;
   display: grid;
@@ -72,14 +72,14 @@
   }
 }
 
-.ragnaroks-lobby-info {
+.rnk-lobby-info {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   justify-content: center;
 }
 
-.ragnaroks-lobby-title {
+.rnk-lobby-title {
   margin: 0;
   font-size: clamp(2.2rem, 4vw, 3.6rem);
   font-weight: 800;
@@ -104,7 +104,7 @@
   }
 }
 
-.ragnaroks-lobby-message {
+.rnk-lobby-message {
   margin: 0;
   font-size: 1.15rem;
   line-height: 1.75;
@@ -112,7 +112,7 @@
   text-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
 }
 
-.ragnaroks-lobby-poll {
+.rnk-lobby-poll {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -123,11 +123,11 @@
   position: relative;
 }
 
-.ragnaroks-lobby-poll.hidden {
+.rnk-lobby-poll.hidden {
   display: none;
 }
 
-.ragnaroks-lobby-poll h2 {
+.rnk-lobby-poll h2 {
   margin: 0;
   font-size: 1.05rem;
   letter-spacing: 0.08em;
@@ -135,19 +135,19 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-.ragnaroks-lobby-poll__question {
+.rnk-lobby-poll__question {
   margin: 0;
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.9);
 }
 
-.ragnaroks-lobby-poll__options {
+.rnk-lobby-poll__options {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
-.ragnaroks-lobby-poll__option {
+.rnk-lobby-poll__option {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -162,30 +162,30 @@
   transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 
-.ragnaroks-lobby-poll__option:hover {
+.rnk-lobby-poll__option:hover {
   transform: translateY(-2px);
   border-color: var(--lobby-accent);
   background: rgba(255, 255, 255, 0.08);
 }
 
-.ragnaroks-lobby-poll__option.selected {
+.rnk-lobby-poll__option.selected {
   border-color: var(--lobby-accent);
   background: rgba(255, 255, 255, 0.12);
   box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.3);
 }
 
-.ragnaroks-lobby-poll__option-label {
+.rnk-lobby-poll__option-label {
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
-.ragnaroks-lobby-poll__option-meta {
+.rnk-lobby-poll__option-meta {
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
   letter-spacing: 0.04em;
 }
 
-.ragnaroks-lobby-poll__option-bar {
+.rnk-lobby-poll__option-bar {
   position: absolute;
   inset: 0;
   border-radius: 10px;
@@ -197,17 +197,17 @@
   opacity: 0.4;
 }
 
-.ragnaroks-lobby-poll__option.selected .ragnaroks-lobby-poll__option-bar {
+.rnk-lobby-poll__option.selected .rnk-lobby-poll__option-bar {
   background: linear-gradient(90deg, var(--lobby-accent), rgba(255, 154, 139, 0.6));
   opacity: 0.5;
 }
 
-.ragnaroks-lobby-poll__option > * {
+.rnk-lobby-poll__option > * {
   position: relative;
   z-index: 1;
 }
 
-.ragnaroks-lobby-poll__status {
+.rnk-lobby-poll__status {
   margin: 0;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.68);
@@ -215,7 +215,7 @@
   letter-spacing: 0.06em;
 }
 
-.ragnaroks-lobby-countdown {
+.rnk-lobby-countdown {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -225,24 +225,24 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.ragnaroks-lobby-countdown.hidden {
+.rnk-lobby-countdown.hidden {
   display: none;
 }
 
-.ragnaroks-lobby-countdown__label {
+.rnk-lobby-countdown__label {
   font-size: 0.85rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.7);
 }
 
-.ragnaroks-lobby-countdown__timer {
+.rnk-lobby-countdown__timer {
   font-size: 2rem;
   letter-spacing: 0.05em;
   color: var(--lobby-accent);
 }
 
-.ragnaroks-lobby-progress {
+.rnk-lobby-progress {
   position: relative;
   width: 100%;
   height: 8px;
@@ -251,11 +251,11 @@
   overflow: hidden;
 }
 
-.ragnaroks-lobby-progress.hidden {
+.rnk-lobby-progress.hidden {
   display: none;
 }
 
-.ragnaroks-lobby-progress__bar {
+.rnk-lobby-progress__bar {
   position: absolute;
   inset: 0;
   width: 0;
@@ -263,12 +263,12 @@
   transition: width 0.4s ease;
 }
 
-.ragnaroks-lobby-dots {
+.rnk-lobby-dots {
   display: flex;
   gap: 0.45rem;
 }
 
-.ragnaroks-lobby-dots span {
+.rnk-lobby-dots span {
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -277,15 +277,15 @@
   animation: lobby-dot 1.4s infinite ease-in-out;
 }
 
-.ragnaroks-lobby-dots span:nth-child(2) { animation-delay: 0.15s; }
-.ragnaroks-lobby-dots span:nth-child(3) { animation-delay: 0.3s; }
+.rnk-lobby-dots span:nth-child(2) { animation-delay: 0.15s; }
+.rnk-lobby-dots span:nth-child(3) { animation-delay: 0.3s; }
 
 @keyframes lobby-dot {
   0%, 80%, 100% { transform: scale(0.75); opacity: 0.5; }
   40% { transform: scale(1); opacity: 1; }
 }
 
-.ragnaroks-lobby-chat {
+.rnk-lobby-chat {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -295,7 +295,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.ragnaroks-lobby-chat h2 {
+.rnk-lobby-chat h2 {
   margin: 0;
   font-size: 1.1rem;
   letter-spacing: 0.08em;
@@ -303,7 +303,7 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-.ragnaroks-lobby-chat__log {
+.rnk-lobby-chat__log {
   flex: 1 1 auto;
   max-height: 320px;
   overflow-y: auto;
@@ -313,7 +313,7 @@
   padding-right: 0.5rem;
 }
 
-.ragnaroks-lobby-chat__empty {
+.rnk-lobby-chat__empty {
   margin: auto;
   color: rgba(255, 255, 255, 0.55);
   font-size: 0.9rem;
@@ -321,7 +321,7 @@
   text-transform: uppercase;
 }
 
-.ragnaroks-lobby-chat__entry {
+.rnk-lobby-chat__entry {
   padding: 0.6rem 0.8rem;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.05);
@@ -329,7 +329,7 @@
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
 }
 
-.ragnaroks-lobby-chat__entry header {
+.rnk-lobby-chat__entry header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -339,20 +339,20 @@
   letter-spacing: 0.08em;
 }
 
-.ragnaroks-lobby-chat__entry p {
+.rnk-lobby-chat__entry p {
   margin: 0.45rem 0 0;
   font-size: 0.95rem;
   color: #f6f8ff;
   line-height: 1.45;
 }
 
-.ragnaroks-lobby-chat__form {
+.rnk-lobby-chat__form {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0.65rem;
 }
 
-.ragnaroks-lobby-chat__form input {
+.rnk-lobby-chat__form input {
   border-radius: 999px;
   padding: 0.7rem 1.1rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -360,7 +360,7 @@
   color: #fefefe;
 }
 
-.ragnaroks-lobby-chat__form button {
+.rnk-lobby-chat__form button {
   border-radius: 999px;
   padding: 0.7rem 1.6rem;
   border: none;
@@ -372,12 +372,12 @@
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.ragnaroks-lobby-chat__form button:hover {
+.rnk-lobby-chat__form button:hover {
   transform: translateY(-2px);
   filter: brightness(1.05);
 }
 
-.ragnaroks-lobby-logout {
+.rnk-lobby-logout {
   align-self: flex-end;
   border: none;
   background: transparent;
@@ -390,7 +390,7 @@
 
 .hidden { display: none !important; }
 
-#ragnaroks-lobby-status-banner {
+#rnk-lobby-status-banner {
   position: fixed;
   top: 12px;
   left: 50%;
@@ -410,7 +410,7 @@
   pointer-events: none;
 }
 
-#sidebar-tabs #ragnaroks-lobby-button.item {
+#sidebar-tabs #rnk-lobby-button.item {
   width: var(--sidebar-tab-size, 48px);
   height: var(--sidebar-tab-size, 48px);
   display: flex;
@@ -421,16 +421,16 @@
   color: inherit;
 }
 
-#sidebar-tabs #ragnaroks-lobby-button.item i {
+#sidebar-tabs #rnk-lobby-button.item i {
   font-size: 1.25rem;
 }
 
-#sidebar-tabs #ragnaroks-lobby-button.item.active {
+#sidebar-tabs #rnk-lobby-button.item.active {
   color: var(--color-text-hyperlink);
   text-shadow: 0 0 12px rgba(255, 107, 107, 0.65);
 }
 
-#sidebar-tabs #ragnaroks-lobby-button.item:focus-visible {
+#sidebar-tabs #rnk-lobby-button.item:focus-visible {
   outline: 2px solid var(--color-text-hyperlink, #ff6b6b);
   outline-offset: 2px;
 }
@@ -440,34 +440,37 @@
 }
 
 @media (max-width: 900px) {
-  .ragnaroks-lobby-content {
+  .rnk-lobby-content {
     grid-template-columns: 1fr;
     padding: 2rem;
   }
 
-  .ragnaroks-lobby-chat__log {
+  .rnk-lobby-chat__log {
     max-height: 260px;
   }
 }
 
 @media (max-width: 540px) {
-  .ragnaroks-lobby-content {
+  .rnk-lobby-content {
     padding: 1.5rem;
     gap: 1.5rem;
   }
 
-  .ragnaroks-lobby-title {
+  .rnk-lobby-title {
     font-size: 2rem;
   }
 
-  .ragnaroks-lobby-chat__form {
+  .rnk-lobby-chat__form {
     grid-template-columns: 1fr;
   }
 }
 
 @media print {
-  #ragnaroks-lobby-overlay,
-  #ragnaroks-lobby-status-banner {
+  #rnk-lobby-overlay,
+  #rnk-lobby-status-banner {
     display: none !important;
   }
 }
+
+
+

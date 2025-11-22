@@ -1,6 +1,6 @@
-# RagNarok's Lobby - Pre-Release Checklist
+﻿# RNK Lobby - Pre-Release Checklist
 
-## ✅ BEFORE YOU POST TO GITHUB
+## âœ… BEFORE YOU POST TO GITHUB
 
 ### Code & Documentation
 - [ ] **Verify main.js has no console.log() statements** (or keep them minimal for debugging)
@@ -17,13 +17,13 @@
   
 - [ ] **Check all links work**
   - [ ] GitHub URLs in documentation
-  - [ ] Patreon link: https://patreon.com/RagNaroks?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink
-  - [ ] Buy Me a Coffee: https://buymeacoffee.com/ragnarokscodex
+  - [ ] Patreon link: https://patreon.com/RNK?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink
+  - [ ] Buy Me a Coffee: https://buymeacoffee.com/RNKcodex
   - [ ] Discord server link (add if needed)
 
 - [ ] **Verify module.json is correct**
   - [ ] Version is 1.0.0
-  - [ ] Correct author name (RagNarok)
+  - [ ] Correct author name (RNK)
   - [ ] Manifest URL points to correct release location
   - [ ] Download URL is valid
   - [ ] License field set to "MIT"
@@ -45,7 +45,7 @@
   - [x] scripts/main.js
   - [x] styles/lobby.css
   - [x] lang/en.json
-  - [x] assets/ragnaroks-codex.jpg
+  - [x] assets/rnk-codex.jpg
   - [x] templates/ folder with all .hbs files
 
 ### README Quality
@@ -58,11 +58,11 @@
 
 ---
 
-## 📦 GITHUB SETUP
+## ðŸ“¦ GITHUB SETUP
 
 ### Before First Push
 - [ ] Create GitHub account if you don't have one
-- [ ] Create repository: `ragnaroks-lobby`
+- [ ] Create repository: `rnk-lobby`
 - [ ] Initialize with MIT License (select during repo creation or add LICENSE file)
 - [ ] Add .gitignore file for Node projects (if any dev files exist)
 
@@ -87,43 +87,43 @@
 ```bash
 git init
 git add .
-git commit -m "Initial release: RagNarok's Lobby v1.0.0"
+git commit -m "Initial release: RNK Lobby v1.0.0"
 git branch -M main
-git remote add origin https://github.com/yourusername/ragnaroks-lobby.git
+git remote add origin https://github.com/yourusername/rnk-lobby.git
 git push -u origin main
 ```
 
 ---
 
-## 🏷️ CREATE GITHUB RELEASE
+## ðŸ·ï¸ CREATE GITHUB RELEASE
 
 ### Release Process
-1. Go to your GitHub repo → Releases → "Create a new release"
+1. Go to your GitHub repo â†’ Releases â†’ "Create a new release"
 
 2. **Tag version**: `v1.0.0`
 
-3. **Release title**: "RagNarok's Lobby v1.0.0 - Official Release"
+3. **Release title**: "RNK Lobby v1.0.0 - Official Release"
 
 4. **Release description** (use this template):
 
 ```markdown
-# 🎭 RagNarok's Lobby v1.0.0
+# ðŸŽ­ RNK Lobby v1.0.0
 
 A system-agnostic maintenance mode module for Foundry VTT that provides GMs with beautiful, customizable full-screen overlays to manage player access during maintenance and session prep.
 
 ## What's New in v1.0.0
 
 ### Core Features
-✨ Full-screen maintenance overlay with smooth animations
-🔒 Complete player access prevention
-⏱️ Countdown timers for automatic re-entry
-🎨 Fully customizable appearance system
-💾 Save and load appearance presets
-📊 Real-time chat monitoring
-🗳️ Player poll system
-📈 Analytics tracking
-🎛️ One-click sidebar toggle
-🔄 Real-time synchronization
+âœ¨ Full-screen maintenance overlay with smooth animations
+ðŸ”’ Complete player access prevention
+â±ï¸ Countdown timers for automatic re-entry
+ðŸŽ¨ Fully customizable appearance system
+ðŸ’¾ Save and load appearance presets
+ðŸ“Š Real-time chat monitoring
+ðŸ—³ï¸ Player poll system
+ðŸ“ˆ Analytics tracking
+ðŸŽ›ï¸ One-click sidebar toggle
+ðŸ”„ Real-time synchronization
 
 ### Features
 - GM Preview Mode - test the overlay as a GM
@@ -147,16 +147,16 @@ A system-agnostic maintenance mode module for Foundry VTT that provides GMs with
 
 ## Support
 
-- 🆓 Free and Open Source (MIT License)
-- ☕ [Buy Me a Coffee](https://buymeacoffee.com/ragnarokscodex)
-- 💜 [Patreon](https://patreon.com/RagNaroks)
-- 🎮 Join RagNarok's Codex Discord
+- ðŸ†“ Free and Open Source (MIT License)
+- â˜• [Buy Me a Coffee](https://buymeacoffee.com/RNKcodex)
+- ðŸ’œ [Patreon](https://patreon.com/RNK)
+- ðŸŽ® Join RNK Codex Discord
 
 ## Credits
 
 Special thanks to:
 - My amazing players for inspiring this module
-- Lisa (my fiancée) for support and encouragement throughout development
+- Lisa (my fiancÃ©e) for support and encouragement throughout development
 
 ---
 
@@ -169,15 +169,15 @@ Special thanks to:
 ```
 
 5. **Upload ZIP file** (create this):
-   - Zip entire ragnaroks-lobby folder
-   - Name it: `ragnaroks-lobby-1.0.0.zip`
+   - Zip entire rnk-lobby folder
+   - Name it: `rnk-lobby-1.0.0.zip`
    - Upload as release asset
 
 6. Click "Publish release"
 
 ---
 
-## 📝 OPTIONAL BUT RECOMMENDED
+## ðŸ“ OPTIONAL BUT RECOMMENDED
 
 ### Create Additional Documentation (in repo)
 - [ ] **CHANGELOG.md** - Document version history
@@ -189,7 +189,7 @@ Special thanks to:
   ## [1.0.0] - 2025-11-09
 
   ### Added
-  - Initial release of RagNarok's Lobby
+  - Initial release of RNK Lobby
   - Full-screen maintenance overlay system
   - Appearance customization with presets
   - Countdown timer functionality
@@ -208,7 +208,7 @@ Special thanks to:
 
 - [ ] **CONTRIBUTING.md** - Guidelines for contributors
   ```markdown
-  # Contributing to RagNarok's Lobby
+  # Contributing to RNK Lobby
 
   Thank you for your interest in contributing!
 
@@ -233,7 +233,7 @@ Special thanks to:
 
 ---
 
-## 🚀 SOCIAL MEDIA & ANNOUNCEMENTS
+## ðŸš€ SOCIAL MEDIA & ANNOUNCEMENTS
 
 ### Posts to Make (after GitHub release)
 - [ ] **Reddit post** to r/FoundryVTT (use provided template)
@@ -252,7 +252,7 @@ Special thanks to:
 
 ---
 
-## 🔗 FOUNDRY PACKAGE REGISTRY (Future)
+## ðŸ”— FOUNDRY PACKAGE REGISTRY (Future)
 
 ### Add to Foundry Package Registry
 1. Ensure module.json is complete and correct
@@ -261,15 +261,15 @@ Special thanks to:
 4. Wait for approval (usually 24-48 hours)
 
 **Requirements:**
-- Valid module.json ✓
-- GitHub repository ✓
-- MIT or compatible license ✓
-- Proper documentation ✓
-- Working manifest URL ✓
+- Valid module.json âœ“
+- GitHub repository âœ“
+- MIT or compatible license âœ“
+- Proper documentation âœ“
+- Working manifest URL âœ“
 
 ---
 
-## 📊 POST-RELEASE MONITORING
+## ðŸ“Š POST-RELEASE MONITORING
 
 ### First Week
 - [ ] Monitor GitHub Issues for bug reports
@@ -292,19 +292,19 @@ Special thanks to:
 
 ---
 
-## ❌ THINGS TO AVOID
+## âŒ THINGS TO AVOID
 
-- ❌ Don't include node_modules, .git, or build files
-- ❌ Don't hardcode URLs (use relative paths)
-- ❌ Don't commit API keys or secrets
-- ❌ Don't include development config files
-- ❌ Don't use console.error() for normal operations
-- ❌ Don't make the repo private (keep it open source)
-- ❌ Don't forget to update version numbers consistently
+- âŒ Don't include node_modules, .git, or build files
+- âŒ Don't hardcode URLs (use relative paths)
+- âŒ Don't commit API keys or secrets
+- âŒ Don't include development config files
+- âŒ Don't use console.error() for normal operations
+- âŒ Don't make the repo private (keep it open source)
+- âŒ Don't forget to update version numbers consistently
 
 ---
 
-## ✅ FINAL VERIFICATION CHECKLIST
+## âœ… FINAL VERIFICATION CHECKLIST
 
 Before you click "Publish Release":
 
@@ -323,7 +323,7 @@ Before you click "Publish Release":
 
 ---
 
-## 📋 QUICK POST-RELEASE ACTION ORDER
+## ðŸ“‹ QUICK POST-RELEASE ACTION ORDER
 
 1. **Publish to GitHub** (release v1.0.0)
 2. **Copy release URL** (you'll need this for posts)
@@ -337,19 +337,21 @@ Before you click "Publish Release":
 
 ---
 
-## 🎉 YOU'RE READY!
+## ðŸŽ‰ YOU'RE READY!
 
 Once you've completed this checklist, your module is production-ready and you can release it with confidence!
 
 ---
 
 **Questions to ask yourself:**
-- Is the code clean and tested? ✓
-- Are the docs comprehensive? ✓
-- Is the license clear? ✓
-- Are the links all working? ✓
+- Is the code clean and tested? âœ“
+- Are the docs comprehensive? âœ“
+- Is the license clear? âœ“
+- Are the links all working? âœ“
 - Have I tested it in Foundry? (Do this!)
-- Is the GitHub repo public? ✓
-- Are the release notes clear? ✓
+- Is the GitHub repo public? âœ“
+- Are the release notes clear? âœ“
 
-If you answer YES to all of these, you're good to go! 🚀
+If you answer YES to all of these, you're good to go! ðŸš€
+
+

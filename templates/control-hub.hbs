@@ -1,42 +1,70 @@
-<section class="ragnaroks-lobby-hub">
-  <header class="ragnaroks-lobby-hub__header">
-    <h1>Lobby Control Hub</h1>
-    <p class="ragnaroks-lobby-hub__subtitle">Centralize maintenance oversight and tools while the world is inaccessible to players.</p>
+<section class="rnk-lobby-hub" {{#if hubImage}}style="--rnk-hub-image: url('{{hubImage}}');"{{/if}}>
+  <header class="rnk-lobby-hub__header">
+    <div class="rnk-lobby-hub__brand">
+      <div class="rnk-lobby-hub__logo" aria-hidden="true">
+        {{#if hubImage}}
+          <img src="{{hubImage}}" alt="RNK Lobby emblem">
+        {{else}}
+          <span>RNK</span>
+        {{/if}}
+      </div>
+      <div class="rnk-lobby-hub__titles">
+        <span class="rnk-lobby-hub__eyebrow">RNK Lobby</span>
+        <h1>Control Hub</h1>
+      </div>
+    </div>
+    <div class="rnk-lobby-hub__status" data-status="{{#if isActive}}active{{else}}inactive{{/if}}">
+      <span class="rnk-lobby-hub__status-dot"></span>
+      <div class="rnk-lobby-hub__status-copy">
+        <strong>{{#if isActive}}Lobby Active{{else}}Lobby Inactive{{/if}}</strong>
+        <p>{{statusDetails}}</p>
+      </div>
+    </div>
   </header>
-  <div class="ragnaroks-lobby-hub__status" data-status="{{#if isActive}}active{{else}}inactive{{/if}}">
-    <span class="ragnaroks-lobby-hub__dot"></span>
-    <strong>{{#if isActive}}Lobby Active{{else}}Lobby Inactive{{/if}}</strong>
-    <span class="ragnaroks-lobby-hub__details">{{statusDetails}}</span>
-  </div>
-  <div class="ragnaroks-lobby-hub__layout">
-    <div class="ragnaroks-lobby-hub__column ragnaroks-lobby-hub__column--left">
-      {{#each controlsLeft}}
-        <button type="button" class="ragnaroks-lobby-hub__button" data-action="{{this.action}}">
-          <i class="{{this.icon}}" aria-hidden="true"></i>
-          <span>{{this.label}}</span>
+
+  <div class="rnk-lobby-hub__layout">
+    <article class="rnk-lobby-hub__preview" aria-label="Player overlay snapshot">
+      <div class="rnk-lobby-hub__preview-overlay">
+        <span class="rnk-lobby-hub__preview-label">Player Overlay</span>
+        <h2>Game Paused</h2>
+        <p>Maintain immersion while you work behind the scenes. Refresh copy, colors, and countdowns without leaving the table.</p>
+        <button type="button" class="rnk-lobby-hub__chip" data-action="appearance">
+          <i class="fas fa-magic" aria-hidden="true"></i>
+          Tweak Appearance
         </button>
-      {{/each}}
-    </div>
-    <div class="ragnaroks-lobby-hub__image-wrapper">
-      <img src="{{hubImage}}" alt="Lobby preview" class="ragnaroks-lobby-hub__image" />
-    </div>
-    <div class="ragnaroks-lobby-hub__column ragnaroks-lobby-hub__column--right">
-      {{#each controlsRight}}
-        <button type="button" class="ragnaroks-lobby-hub__button" data-action="{{this.action}}">
-          <i class="{{this.icon}}" aria-hidden="true"></i>
-          <span>{{this.label}}</span>
+      </div>
+    </article>
+
+    <div class="rnk-lobby-hub__panels">
+      <div class="rnk-lobby-hub__controls">
+        {{#each controls}}
+          <button type="button" class="rnk-lobby-hub__button" data-action="{{this.action}}">
+            <span class="rnk-lobby-hub__button-icon">
+              <i class="{{this.icon}}" aria-hidden="true"></i>
+            </span>
+            <span class="rnk-lobby-hub__button-copy">
+              <span class="rnk-lobby-hub__button-label">{{this.label}}</span>
+              {{#if this.description}}
+                <span class="rnk-lobby-hub__button-help">{{this.description}}</span>
+              {{/if}}
+            </span>
+          </button>
+        {{/each}}
+      </div>
+
+      <footer class="rnk-lobby-hub__footer">
+        <button type="button" class="rnk-lobby-hub__footer-button" data-action="refresh-state">
+          <i class="fas fa-sync-alt" aria-hidden="true"></i>
+          Refresh State
         </button>
-      {{/each}}
+        <button type="button" class="rnk-lobby-hub__footer-button is-destructive" data-action="close">
+          <i class="fas fa-times" aria-hidden="true"></i>
+          Close Hub
+        </button>
+      </footer>
     </div>
   </div>
-  <footer class="ragnaroks-lobby-hub__footer">
-    <button type="button" class="ragnaroks-lobby-hub__button-secondary" data-action="refresh-state">
-      <i class="fas fa-sync-alt" aria-hidden="true"></i>
-      <span>Refresh State</span>
-    </button>
-    <button type="button" class="ragnaroks-lobby-hub__button-secondary" data-action="close">
-      <i class="fas fa-times" aria-hidden="true"></i>
-      <span>Close Hub</span>
-    </button>
-  </footer>
 </section>
+
+
+

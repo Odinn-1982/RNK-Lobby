@@ -1,28 +1,28 @@
-# RagNarok's Lobby
+﻿# RNK Lobby
 
 A comprehensive, system-agnostic maintenance mode module for Foundry VTT that prevents players from accessing the world while the GM performs maintenance or prepares for the next session.
 
 ## Overview
 
-RagNarok's Lobby provides GMs with a powerful full-screen overlay system to manage player access during maintenance windows. When activated, players see a customizable maintenance message while the GM continues working behind the scenes. The system includes countdown timers, customizable appearances, chat monitoring, preset configurations, and analytics tracking.
+RNK Lobby provides GMs with a powerful full-screen overlay system to manage player access during maintenance windows. When activated, players see a customizable maintenance message while the GM continues working behind the scenes. The system includes countdown timers, customizable appearances, chat monitoring, preset configurations, and analytics tracking.
 
 ## Key Features
 
-### 🎭 Flexible Lobby System
+### ðŸŽ­ Flexible Lobby System
 - **Instant Activation** - Toggle the lobby on/off with a single click
 - **Countdown Timers** - Set automatic re-entry times for players
 - **Custom Messages** - Display personalized maintenance messages
 - **Custom Backgrounds** - Use your own images for the overlay
 - **Appearance Customization** - Control colors, fonts, opacity, and animations
 
-### 🎨 Visual Customization
+### ðŸŽ¨ Visual Customization
 - **Color Palette Control** - Customize title and message colors
 - **Font Selection** - Choose from multiple font options
 - **Animation Presets** - Apply pre-configured animation styles
 - **Opacity Control** - Adjust overlay transparency
 - **Responsive Design** - Looks great on all screen sizes
 
-### ⏱️ Advanced Features
+### â±ï¸ Advanced Features
 - **Countdown Timers** - Set time for automatic player re-entry
 - **Chat Monitoring** - Monitor player chat while they wait
 - **Preset Configurations** - Save and load appearance presets
@@ -30,7 +30,7 @@ RagNarok's Lobby provides GMs with a powerful full-screen overlay system to mana
 - **Analytics Panel** - Track lobby usage and statistics
 - **Help System** - Built-in help dialog for users
 
-### 🔧 GM Tools
+### ðŸ”§ GM Tools
 - **Sidebar Button** - Easy access from the main interface
 - **GM Preview Mode** - Test the lobby appearance before going live
 - **Sound Notifications** - Optional audio feedback when toggling
@@ -43,12 +43,12 @@ RagNarok's Lobby provides GMs with a powerful full-screen overlay system to mana
 1. Open Foundry VTT
 2. Go to **Add-on Modules**
 3. Click **Install Module**
-4. Search for "RagNarok's Lobby"
+4. Search for "RNK Lobby"
 5. Click **Install**
 6. Enable the module in your world
 
 ### Method 2: Manual Installation
-1. Download the latest release from the [GitHub repository](https://github.com/Odinn-1982/ragnaroks-lobby)
+1. Download the latest release from the [GitHub repository](https://github.com/Odinn-1982/rnk-lobby)
 2. Extract the contents to your `Data/modules` folder
 3. Restart Foundry VTT
 4. Enable the module in your world settings
@@ -61,7 +61,7 @@ RagNarok's Lobby provides GMs with a powerful full-screen overlay system to mana
    - Use the module settings to toggle the lobby on
 
 2. **Configure the Message** (Optional)
-   - Go to Module Settings → RagNarok's Lobby
+   - Go to Module Settings â†’ RNK Lobby
    - Set "Custom Lobby Message" to your desired text
    - Leave blank to use the default message
 
@@ -76,7 +76,7 @@ RagNarok's Lobby provides GMs with a powerful full-screen overlay system to mana
    - Click "End Lobby" in the hub window
 
 ### Setting Countdown Timer
-1. Open the RagNarok's Lobby Hub
+1. Open the RNK Lobby Hub
 2. Click "Set Countdown"
 3. Enter the duration (minutes)
 4. Click "Start Countdown"
@@ -95,7 +95,7 @@ RagNarok's Lobby provides GMs with a powerful full-screen overlay system to mana
 - *Scope: World*
 
 **Custom Background Image**
-- Path to a custom background image (e.g., `modules/ragnaroks-lobby/assets/bg.jpg`)
+- Path to a custom background image (e.g., `modules/rnk-lobby/assets/bg.jpg`)
 - Leave blank to use the default image
 - *Scope: World*
 
@@ -106,7 +106,7 @@ RagNarok's Lobby provides GMs with a powerful full-screen overlay system to mana
 ## Advanced Features
 
 ### Appearance Customization
-Access the full appearance editor through the RagNarok's Lobby Hub:
+Access the full appearance editor through the RNK Lobby Hub:
 - **Title Color** - Customize the maintenance title color
 - **Message Color** - Change the message text color
 - **Button Color** - Customize interactive buttons
@@ -143,7 +143,7 @@ Track lobby usage patterns:
 ## Troubleshooting
 
 ### Image Not Loading
-- Ensure the image path is correct (e.g., `modules/ragnaroks-lobby/assets/ragnaroks-codex.jpg`)
+- Ensure the image path is correct (e.g., `modules/rnk-lobby/assets/rnk-codex.jpg`)
 - Image must be accessible from your Foundry instance
 - Try refreshing the page or reloading the module
 
@@ -195,26 +195,26 @@ Track lobby usage patterns:
 
 **Special Thanks:**
 - To my amazing players who inspired this module through their patient support during maintenance sessions
-- To **Lisa**, my wonderful fiancée, for endless encouragement and support throughout development
+- To **Lisa**, my wonderful fiancÃ©e, for endless encouragement and support throughout development
 
 This module was created to solve real-world problems experienced during actual gameplay sessions and has been refined based on practical feedback from an engaged and supportive player community.
 
 ## Support
 
-If you enjoy RagNarok's Lobby, please consider supporting development:
+If you enjoy RNK Lobby, please consider supporting development:
 
-### 💜 Patreon
+### ðŸ’œ Patreon
 Support ongoing development and get exclusive content:
-[Become a Patron](https://patreon.com/RagNaroks?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink)
+[Become a Patron](https://patreon.com/RNK?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink)
 
-### ☕ Buy Me a Coffee
+### â˜• Buy Me a Coffee
 Prefer one-time donations? Buy me a coffee:
-[Buy Me a Coffee](https://buymeacoffee.com/ragnarokscodex)
+[Buy Me a Coffee](https://buymeacoffee.com/RNKcodex)
 
-### 🎮 Join Our Community
+### ðŸŽ® Join Our Community
 Connect with other Foundry users in my Discord:
-- **Server:** RagNarok's Codex
-- **Discord:** [Join our community](https://discord.gg/ragnarokscodex)
+- **Server:** RNK Codex
+- **Discord:** [Join our community](https://discord.gg/RNKcodex)
 
 ## License
 
@@ -228,7 +228,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## Known Issues
 
-None currently reported. Please report any issues on the [GitHub Issues page](https://github.com/Odinn-1982/ragnaroks-lobby/issues).
+None currently reported. Please report any issues on the [GitHub Issues page](https://github.com/Odinn-1982/rnk-lobby/issues).
 
 ## Roadmap
 
@@ -255,16 +255,18 @@ See [CHANGELOG.md](CHANGELOG.md) for version history and updates.
 ## Footer
 
 **Version:** 1.0.0  
-**Author:** RagNarok  
+**Author:** RNK  
 **Last Updated:** November 2025  
-**Repository:** [RagNarok's Lobby on GitHub](https://github.com/Odinn-1982/ragnaroks-lobby)
+**Repository:** [RNK Lobby on GitHub](https://github.com/Odinn-1982/rnk-lobby)
 
 ### Quick Links
-- 📚 [Documentation](https://github.com/Odinn-1982/ragnaroks-lobby/wiki)
-- 🐛 [Report Issues](https://github.com/Odinn-1982/ragnaroks-lobby/issues)
-- 💡 [Feature Requests](https://github.com/Odinn-1982/ragnaroks-lobby/discussions)
-- 🤝 [Contribute](https://github.com/Odinn-1982/ragnaroks-lobby/blob/main/CONTRIBUTING.md)
+- ðŸ“š [Documentation](https://github.com/Odinn-1982/rnk-lobby/wiki)
+- ðŸ› [Report Issues](https://github.com/Odinn-1982/rnk-lobby/issues)
+- ðŸ’¡ [Feature Requests](https://github.com/Odinn-1982/rnk-lobby/discussions)
+- ðŸ¤ [Contribute](https://github.com/Odinn-1982/rnk-lobby/blob/main/CONTRIBUTING.md)
 
-Made with ❤️ for the Foundry VTT community.
+Made with â¤ï¸ for the Foundry VTT community.
 
-Enjoy managing your maintenance sessions! 🎭
+Enjoy managing your maintenance sessions! ðŸŽ­
+
+

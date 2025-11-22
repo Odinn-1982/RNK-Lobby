@@ -1,37 +1,37 @@
-# RagNarok's Lobby - System Summary
+﻿# RNK Lobby - System Summary
 
 ## Technical Overview
 
-RagNarok's Lobby is a comprehensive maintenance mode system designed for Foundry Virtual Tabletop. It provides GMs with a flexible, full-screen overlay mechanism to prevent player access while maintaining backend server state and allowing GM-side management operations.
+RNK Lobby is a comprehensive maintenance mode system designed for Foundry Virtual Tabletop. It provides GMs with a flexible, full-screen overlay mechanism to prevent player access while maintaining backend server state and allowing GM-side management operations.
 
 ## Architecture
 
 ### Core Components
 
 ```
-RagNarokLobby (Main Controller)
-├── Overlay System (Visual Representation)
-├── Settings Manager (Configuration Storage)
-├── Socket Manager (Real-time Synchronization)
-├── State Manager (Current Status Tracking)
-├── UI Applications
-│   ├── RagNarokLobbyHub (Main Dashboard)
-│   ├── RagNarokLobbyToggleWindow (Quick Toggle)
-│   ├── RagNarokLobbyAppearanceForm (Customization)
-│   ├── RagNarokLobbyCountdownForm (Timer Control)
-│   ├── RagNarokLobbyChatMonitor (Chat Tracking)
-│   ├── RagNarokLobbyHelpDialog (Documentation)
-│   ├── RagNarokLobbyPresetsManager (Configuration Management)
-│   ├── RagNarokLobbyPollManager (Player Surveys)
-│   └── RagNarokLobbyAnalyticsPanel (Usage Statistics)
-└── Integration Layer (Sidebar, Hooks, Events)
+RNKLobby (Main Controller)
+â”œâ”€â”€ Overlay System (Visual Representation)
+â”œâ”€â”€ Settings Manager (Configuration Storage)
+â”œâ”€â”€ Socket Manager (Real-time Synchronization)
+â”œâ”€â”€ State Manager (Current Status Tracking)
+â”œâ”€â”€ UI Applications
+â”‚   â”œâ”€â”€ RNKLobbyHub (Main Dashboard)
+â”‚   â”œâ”€â”€ RNKLobbyToggleWindow (Quick Toggle)
+â”‚   â”œâ”€â”€ RNKLobbyAppearanceForm (Customization)
+â”‚   â”œâ”€â”€ RNKLobbyCountdownForm (Timer Control)
+â”‚   â”œâ”€â”€ RNKLobbyChatMonitor (Chat Tracking)
+â”‚   â”œâ”€â”€ RNKLobbyHelpDialog (Documentation)
+â”‚   â”œâ”€â”€ RNKLobbyPresetsManager (Configuration Management)
+â”‚   â”œâ”€â”€ RNKLobbyPollManager (Player Surveys)
+â”‚   â””â”€â”€ RNKLobbyAnalyticsPanel (Usage Statistics)
+â””â”€â”€ Integration Layer (Sidebar, Hooks, Events)
 ```
 
 ### Data Flow
 
 1. **Activation**
    - GM toggles lobby via button or settings
-   - `RagNarokLobby.handleLobbyToggle()` is called
+   - `RNKLobby.handleLobbyToggle()` is called
    - State is saved to `game.settings`
    - Socket broadcast to all clients with new state
    - Overlay is rendered on player clients
@@ -75,11 +75,11 @@ RagNarokLobby (Main Controller)
 - `enableWorldInteraction()` - Re-enables player controls
 
 **CSS Components:**
-- `#ragnaroks-lobby-overlay` - Main container
-- `.ragnaroks-lobby-content` - Content card with glassmorphism
-- `.ragnaroks-lobby-title` - Animated gradient title
-- `.ragnaroks-lobby-message` - Status message text
-- `.ragnaroks-lobby-dots` - Animated loading dots
+- `#rnk-lobby-overlay` - Main container
+- `.rnk-lobby-content` - Content card with glassmorphism
+- `.rnk-lobby-title` - Animated gradient title
+- `.rnk-lobby-message` - Status message text
+- `.rnk-lobby-dots` - Animated loading dots
 
 **Animations:**
 - `slideIn` - Content entrance animation
@@ -161,13 +161,13 @@ RagNarokLobby (Main Controller)
 
 ### Foundry Hooks
 ```javascript
-Hooks.on("init", () => RagNarokLobby.init());
-Hooks.on("ready", () => RagNarokLobby.ready());
+Hooks.on("init", () => RNKLobby.init());
+Hooks.on("ready", () => RNKLobby.ready());
 ```
 
 ### Socket System
 ```
-Module Socket: module.ragnaroks-lobby
+Module Socket: module.rnk-lobby
 Events:
 - lobby-status: Broadcast lobby state changes
 - lobby-request: Players request current state
@@ -220,30 +220,30 @@ Events:
 ## File Structure
 
 ```
-ragnaroks-lobby/
-├── module.json              # Module metadata
-├── LICENSE                  # MIT License
-├── README.md               # User documentation
-├── system-summary.md       # Technical documentation
-├── styles/
-│   ├── lobby.css           # Main styling
-│   └── control-hub.css     # Hub interface styling
-├── scripts/
-│   └── main.js             # All functionality
-├── lang/
-│   └── en.json            # English localization
-├── templates/
-│   ├── control-hub.hbs
-│   ├── appearance-form.hbs
-│   ├── countdown-form.hbs
-│   ├── chat-monitor.hbs
-│   ├── help-dialog.hbs
-│   ├── presets-manager.hbs
-│   ├── poll-manager.hbs
-│   ├── analytics-panel.hbs
-│   └── toggle-controls.hbs
-└── assets/
-    └── ragnaroks-codex.jpg # Default background image
+rnk-lobby/
+â”œâ”€â”€ module.json              # Module metadata
+â”œâ”€â”€ LICENSE                  # MIT License
+â”œâ”€â”€ README.md               # User documentation
+â”œâ”€â”€ system-summary.md       # Technical documentation
+â”œâ”€â”€ styles/
+â”‚   â”œâ”€â”€ lobby.css           # Main styling
+â”‚   â””â”€â”€ control-hub.css     # Hub interface styling
+â”œâ”€â”€ scripts/
+â”‚   â””â”€â”€ main.js             # All functionality
+â”œâ”€â”€ lang/
+â”‚   â””â”€â”€ en.json            # English localization
+â”œâ”€â”€ templates/
+â”‚   â”œâ”€â”€ control-hub.hbs
+â”‚   â”œâ”€â”€ appearance-form.hbs
+â”‚   â”œâ”€â”€ countdown-form.hbs
+â”‚   â”œâ”€â”€ chat-monitor.hbs
+â”‚   â”œâ”€â”€ help-dialog.hbs
+â”‚   â”œâ”€â”€ presets-manager.hbs
+â”‚   â”œâ”€â”€ poll-manager.hbs
+â”‚   â”œâ”€â”€ analytics-panel.hbs
+â”‚   â””â”€â”€ toggle-controls.hbs
+â””â”€â”€ assets/
+    â””â”€â”€ rnk-codex.jpg # Default background image
 ```
 
 ## Configuration Examples
@@ -280,7 +280,7 @@ await game.settings.set(LOBBY_MODULE_ID, APPEARANCE_SETTING_KEY, {
 ### Common Issues
 
 **Image not loading**
-- Verify path uses `modules/ragnaroks-lobby/` prefix
+- Verify path uses `modules/rnk-lobby/` prefix
 - Check image file exists and is accessible
 - Try refreshing browser
 
@@ -304,11 +304,12 @@ MIT License - See LICENSE file for full text
 
 ## Credits
 
-**Author:** RagNarok  
+**Author:** RNK  
 **Inspired by:** Player community feedback  
-**Special Thanks:** Lisa (fiancée) for support and encouragement
+**Special Thanks:** Lisa (fiancÃ©e) for support and encouragement
 
 ---
 
 **Last Updated:** November 2025  
 **Version:** 1.0.0
+
