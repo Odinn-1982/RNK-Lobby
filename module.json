@@ -31,7 +31,7 @@
   "packs": [],
   "url": "https://github.com/Odinn-1982/rnk-lobby",
   "manifest": "https://raw.githubusercontent.com/Odinn-1982/rnk-lobby/master/module.json",
-  "download": "https://github.com/Odinn-1982/rnk-lobby/releases/latest/download/rnk-lobby.zip",
+  "download": "https://github.com/Odinn-1982/rnk-lobby/releases/download/1/rnk-lobby.zip",
   "readme": "README.md",
   "changelog": "CHANGELOG.md",
   "bugs": "https://github.com/Odinn-1982/rnk-lobby/issues"
