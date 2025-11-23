@@ -1,7 +1,7 @@
 {
   "id": "rnk-lobby",
   "title": "RNK Lobby",
-  "description": "A system-agnostic maintenance lobby module that prevents players from accessing the world while the GM performs maintenance. Players are presented with a full-screen overlay message while the lobby is active. Features countdown timers, customizable appearances, chat monitoring, and more!",
+  "description": "A system-agnostic GM prep lobby module that prevents players from accessing the world while the GM performs GM prepping. Players are presented with a full-screen overlay message while the lobby is active. Features countdown timers, customizable appearances, chat monitoring, and more!",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "12",

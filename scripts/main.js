@@ -1,5 +1,5 @@
 ﻿/**
- * RNK Lobby - System agnostic maintenance mode with GM control center.
+ * RNK Lobby - System agnostic GM prep mode with GM control center.
  */
 
 const LOBBY_MODULE_ID = "rnk-lobby";
@@ -42,7 +42,7 @@ const DEFAULT_COUNTDOWN = {
   isActive: false,
   duration: 0,
   endTime: 0,
-  message: "Maintenance complete in",
+  message: "GM Prep complete in",
   showProgressBar: true,
   completed: false,
   actions: {
@@ -1286,161 +1286,184 @@ class RNKLobby {
     overlay.id = "rnk-lobby-overlay";
     overlay.classList.add("rnk-lobby-active");
 
-    const content = document.createElement("div");
-    content.classList.add("rnk-lobby-content");
+    // 1. Background Layer
+    const backgroundLayer = document.createElement("div");
+    backgroundLayer.id = "rnk-lobby-background";
+    overlay.appendChild(backgroundLayer);
 
-    const info = document.createElement("section");
-    info.classList.add("rnk-lobby-info");
+    // 2. Glass Container
+    const container = document.createElement("div");
+    container.classList.add("rnk-lobby-container");
+
+    // 3. Main Content Area
+    const mainContent = document.createElement("div");
+    mainContent.classList.add("rnk-lobby-main");
 
     const title = document.createElement("h1");
     title.classList.add("rnk-lobby-title");
 
-    const message = document.createElement("p");
+    const subtitle = document.createElement("div");
+    subtitle.classList.add("rnk-lobby-subtitle");
+    subtitle.textContent = "System Maintenance In Progress";
+
+    const message = document.createElement("div");
     message.classList.add("rnk-lobby-message");
 
+    // Status Bar
+    const statusBar = document.createElement("div");
+    statusBar.classList.add("rnk-lobby-status-bar");
+
+    const statusStat = document.createElement("div");
+    statusStat.classList.add("rnk-lobby-stat");
+    statusStat.innerHTML = `
+      <span class="rnk-lobby-stat-label">Server Status</span>
+      <span class="rnk-lobby-stat-value">
+        <span class="rnk-status-dot maintenance"></span> Maintenance
+      </span>
+    `;
+    statusBar.appendChild(statusStat);
+
+    // Countdown (Hidden by default)
     const countdownContainer = document.createElement("div");
-    countdownContainer.classList.add("rnk-lobby-countdown");
+    countdownContainer.classList.add("rnk-lobby-stat");
+    countdownContainer.style.display = "none";
+    countdownContainer.innerHTML = `
+      <span class="rnk-lobby-stat-label">Estimated Time</span>
+      <span class="rnk-lobby-stat-value" id="rnk-lobby-timer">--:--</span>
+    `;
+    statusBar.appendChild(countdownContainer);
 
-    const countdownLabel = document.createElement("span");
-    countdownLabel.classList.add("rnk-lobby-countdown__label");
+    mainContent.appendChild(title);
+    mainContent.appendChild(subtitle);
+    mainContent.appendChild(message);
+    mainContent.appendChild(statusBar);
 
-    const countdownTimer = document.createElement("strong");
-    countdownTimer.classList.add("rnk-lobby-countdown__timer");
+    // 4. Sidebar (Character Card & Chat)
+    const sidebar = document.createElement("div");
+    sidebar.classList.add("rnk-lobby-sidebar");
 
-    const progressBarWrapper = document.createElement("div");
-    progressBarWrapper.classList.add("rnk-lobby-progress");
-
-    const progressBar = document.createElement("div");
-    progressBar.classList.add("rnk-lobby-progress__bar");
-    progressBarWrapper.appendChild(progressBar);
-
-    countdownContainer.appendChild(countdownLabel);
-    countdownContainer.appendChild(countdownTimer);
-    countdownContainer.appendChild(progressBarWrapper);
-
-    const dots = document.createElement("div");
-    dots.classList.add("rnk-lobby-dots");
-    dots.innerHTML = "<span></span><span></span><span></span>";
-
-    info.appendChild(title);
-    info.appendChild(message);
-    info.appendChild(countdownContainer);
-    info.appendChild(dots);
-
-    const chat = document.createElement("section");
-    chat.classList.add("rnk-lobby-chat");
-
-    const chatHeader = document.createElement("h2");
-    chatHeader.textContent = "Lobby Chat";
-
-    const chatLog = document.createElement("div");
-    chatLog.classList.add("rnk-lobby-chat__log");
-
-    const chatForm = document.createElement("form");
-    chatForm.classList.add("rnk-lobby-chat__form");
-
-    const chatInput = document.createElement("input");
-    chatInput.type = "text";
-    chatInput.name = "lobbyChat";
-    chatInput.placeholder = "Share a message with everyone waiting...";
-    chatInput.autocomplete = "off";
-
+    // Character Card
+    const charCard = document.createElement("div");
+    charCard.classList.add("rnk-character-card");
     
-    const pollSection = document.createElement("section");
-    pollSection.classList.add("rnk-lobby-poll");
+    const actor = game.user.character;
+    const charImg = document.createElement("img");
+    charImg.classList.add("rnk-character-image");
+    charImg.src = actor?.img || "icons/svg/mystery-man.svg";
+    
+    const charInfo = document.createElement("div");
+    charInfo.classList.add("rnk-character-info");
+    charInfo.innerHTML = `
+      <div class="rnk-character-name">${actor?.name || game.user.name}</div>
+      <div class="rnk-character-class">${actor?.type || "Player"}</div>
+    `;
 
-    const pollHeader = document.createElement("h2");
-    pollHeader.textContent = "Ready Check";
+    charCard.appendChild(charImg);
+    charCard.appendChild(charInfo);
+    sidebar.appendChild(charCard);
 
-    const pollQuestion = document.createElement("p");
-    pollQuestion.classList.add("rnk-lobby-poll__question");
+    // Chat / Updates Area
+    const updatesArea = document.createElement("div");
+    updatesArea.classList.add("rnk-lobby-updates");
+    sidebar.appendChild(updatesArea);
 
-    const pollOptions = document.createElement("div");
-    pollOptions.classList.add("rnk-lobby-poll__options");
+    // Chat Input
+    const chatForm = document.createElement("form");
+    chatForm.style.display = "flex";
+    chatForm.style.gap = "0.5rem";
+    chatForm.innerHTML = `
+      <input type="text" placeholder="Message GM..." style="flex:1; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:0.5rem; border-radius:4px;">
+      <button type="submit" style="background:var(--lobby-accent); border:none; color:white; padding:0 1rem; border-radius:4px; cursor:pointer;">Send</button>
+    `;
+    sidebar.appendChild(chatForm);
 
-    const pollStatus = document.createElement("p");
-    pollStatus.classList.add("rnk-lobby-poll__status");
+    container.appendChild(mainContent);
+    container.appendChild(sidebar);
+    overlay.appendChild(container);
 
-    pollSection.appendChild(pollHeader);
-    pollSection.appendChild(pollQuestion);
-    pollSection.appendChild(pollOptions);
-    pollSection.appendChild(pollStatus);
-    const chatSend = document.createElement("button");
-    chatSend.type = "submit";
-    chatSend.textContent = "Send";
-
-    chatForm.appendChild(chatInput);
-    chatForm.appendChild(chatSend);
-
-    const logoutButton = document.createElement("button");
-    logoutButton.type = "button";
-    logoutButton.classList.add("rnk-lobby-logout");
-    logoutButton.textContent = "Return to Login";
-
-    chat.appendChild(chatHeader);
-    chat.appendChild(chatLog);
-    chat.appendChild(chatForm);
-    chat.appendChild(logoutButton);
-
-  content.appendChild(info);
-  content.appendChild(pollSection);
-  content.appendChild(chat);
-    overlay.appendChild(content);
-
-    const customImage = state.customImage ?? "";
-    const resolvedImagePath = RNKLobby.resolveImagePath(customImage);
-    const routedImagePath = globalThis?.foundry?.utils?.getRoute
-      ? foundry.utils.getRoute(resolvedImagePath)
-      : resolvedImagePath;
-    overlay.style.setProperty("--lobby-bg-image", `url('${routedImagePath}')`);
+    // 5. Audio Controls
+    const audioControls = document.createElement("div");
+    audioControls.classList.add("rnk-audio-controls");
+    audioControls.innerHTML = `
+      <div class="rnk-audio-btn" id="rnk-lobby-mute" title="Toggle Sound"><i class="fas fa-volume-up"></i></div>
+      <div class="rnk-audio-btn" id="rnk-lobby-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></div>
+    `;
+    overlay.appendChild(audioControls);
 
     document.body.appendChild(overlay);
 
+    // Store references
     RNKLobby.overlayElements = {
       overlay,
-      content,
-      info,
+      backgroundLayer,
       title,
       message,
       countdown: {
         container: countdownContainer,
-        label: countdownLabel,
-        timer: countdownTimer,
-        progressBar
-      },
-      poll: {
-        container: pollSection,
-        question: pollQuestion,
-        options: pollOptions,
-        status: pollStatus
+        timer: countdownContainer.querySelector("#rnk-lobby-timer")
       },
       chat: {
-        log: chatLog,
+        log: updatesArea,
         form: chatForm,
-        input: chatInput
+        input: chatForm.querySelector("input")
       }
     };
 
+    // Initialize Content
+    RNKLobby.updateOverlayBackground(state.customImage);
     RNKLobby.applyAppearance(state);
     RNKLobby.renderChatMessages();
-  RNKLobby.renderPollState();
     RNKLobby.updateCountdownDisplay();
 
-    chatForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const text = chatInput.value.trim();
-      if (!text) return;
-      RNKLobby.sendChatMessage(text);
-      chatInput.value = "";
+    // Event Listeners
+    chatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const input = chatForm.querySelector("input");
+      const text = input.value.trim();
+      if (text) {
+        RNKLobby.sendChatMessage(text);
+        input.value = "";
+      }
     });
 
-    logoutButton.addEventListener("click", () => RNKLobby.sendPlayerToLogin());
-
-  pollOptions.addEventListener("click", (event) => RNKLobby.onPollOptionClick(event));
+    document.getElementById("rnk-lobby-logout").addEventListener("click", () => RNKLobby.sendPlayerToLogin());
+    
+    // Mute Toggle
+    let isMuted = false;
+    document.getElementById("rnk-lobby-mute").addEventListener("click", (e) => {
+      isMuted = !isMuted;
+      const icon = e.currentTarget.querySelector("i");
+      icon.className = isMuted ? "fas fa-volume-mute" : "fas fa-volume-up";
+      // Implement actual audio muting logic here if we add background music
+    });
 
     const shouldDisableInteraction = !game.user.isGM || gmPreview;
     if (shouldDisableInteraction) {
       RNKLobby.disableWorldInteraction();
+    }
+  }
+
+  static updateOverlayBackground(path) {
+    if (!RNKLobby.overlayElements) return;
+    const layer = RNKLobby.overlayElements.backgroundLayer;
+    layer.innerHTML = ""; // Clear existing
+
+    const imagePath = path || DEFAULT_IMAGE_FILE;
+    const resolvedPath = RNKLobby.resolveImagePath(imagePath);
+    const isVideo = resolvedPath.endsWith(".webm") || resolvedPath.endsWith(".mp4");
+
+    if (isVideo) {
+      const video = document.createElement("video");
+      video.src = resolvedPath;
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+      layer.appendChild(video);
+    } else {
+      const img = document.createElement("img");
+      img.src = resolvedPath;
+      layer.appendChild(img);
     }
   }
 
@@ -1456,7 +1479,7 @@ class RNKLobby {
       overlay.classList.remove("rnk-lobby-active");
       setTimeout(() => {
         overlay.remove();
-      }, 250);
+      }, 500);
     }
     RNKLobby.overlayElements = null;
     RNKLobby.enableWorldInteraction();
@@ -1465,39 +1488,34 @@ class RNKLobby {
   static applyAppearance(state = RNKLobby.currentState) {
     if (!RNKLobby.overlayElements) return;
 
-    const { overlay, content, info, title, message } = RNKLobby.overlayElements;
+    const { overlay, title, message } = RNKLobby.overlayElements;
     const appearance = state.appearance ?? DEFAULT_APPEARANCE;
     const customMessage = state.customMessage?.trim();
 
-    overlay.style.setProperty("--lobby-accent", appearance.accentColor ?? DEFAULT_APPEARANCE.accentColor);
-    overlay.style.setProperty("--lobby-overlay-opacity", appearance.overlayOpacity ?? DEFAULT_APPEARANCE.overlayOpacity);
-    overlay.style.setProperty("--lobby-blur", `${appearance.blurStrength ?? DEFAULT_APPEARANCE.blurStrength}px`);
-    overlay.style.setProperty("--lobby-font-body", appearance.bodyFont || DEFAULT_APPEARANCE.bodyFont);
-    overlay.style.setProperty("--lobby-font-heading", appearance.headingFont || DEFAULT_APPEARANCE.headingFont);
-
-    const alignment = appearance.messageAlignment ?? DEFAULT_APPEARANCE.messageAlignment;
-    if (info) info.style.textAlign = alignment;
-    if (title) title.style.fontFamily = appearance.headingFont || DEFAULT_APPEARANCE.headingFont;
-    if (message) message.style.fontFamily = appearance.bodyFont || DEFAULT_APPEARANCE.bodyFont;
-
+    // Update CSS Variables
+    overlay.style.setProperty("--lobby-accent", appearance.accentColor ?? "#ff6b6b");
+    overlay.style.setProperty("--lobby-glass-blur", `${appearance.blurStrength ?? 20}px`);
+    
+    // Update Text
     const localizedTitle = game.i18n.localize("game.messages.rnk-lobby.maintenance-title");
-    title.textContent = appearance.customTitle?.trim() || localizedTitle;
+    title.textContent = appearance.customTitle?.trim() || localizedTitle || "Ragnarok's Lobby";
 
     const defaultMessage = game.i18n.localize("game.messages.rnk-lobby.maintenance-message");
-    message.textContent = customMessage || defaultMessage;
+    message.innerHTML = customMessage || defaultMessage || "The world is currently being reshaped by the Game Master. Please stand by.";
   }
 
   static refreshOverlayAppearance() {
     RNKLobby.currentState.appearance = RNKLobby.getAppearanceSettings();
     if (RNKLobby.isOverlayVisible()) {
       RNKLobby.applyAppearance();
-      RNKLobby.updateOverlayBackground();
+      RNKLobby.updateOverlayBackground(RNKLobby.currentState.customImage);
     }
   }
 
   static syncCountdownFromSettings() {
     const state = RNKLobby.getCountdownState();
     RNKLobby.currentState.countdown = state;
+
     RNKLobby.countdownCompletionHandled = !state.isActive;
     RNKLobby.syncCountdown(state);
   }
