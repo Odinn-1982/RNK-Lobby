@@ -1,0 +1,123 @@
+{
+  "GATEWAY": {
+    "ModuleTitle": "RNK Gateway",
+    "Settings": {
+      "GatewayActive": {
+        "Name": "Gateway Active",
+        "Hint": "When enabled, players will see the Gateway instead of the game world"
+      },
+      "GmPreview": {
+        "Name": "GM Preview Mode",
+        "Hint": "Allow GMs to preview the Gateway overlay for testing"
+      },
+      "CustomMessage": {
+        "Name": "Custom Welcome Message",
+        "Hint": "Custom message to display in the Gateway (leave empty for default)"
+      },
+      "BackgroundImage": {
+        "Name": "Background Image",
+        "Hint": "Path to a custom background image for the Gateway"
+      },
+      "EnableSound": {
+        "Name": "Enable Sound Effects",
+        "Hint": "Play sounds when Gateway activates/deactivates"
+      },
+      "Theme": {
+        "Name": "Gateway Theme",
+        "Hint": "Choose a visual theme for the Gateway"
+      }
+    },
+    "Notifications": {
+      "Activated": "Gateway activated - players are now in the lobby",
+      "Deactivated": "Gateway deactivated - players can access the world",
+      "ChatSent": "Message sent to Gateway chat",
+      "PollCreated": "Poll launched in Gateway",
+      "PollClosed": "Gateway poll closed"
+    },
+    "UI": {
+      "Title": "Welcome to the Gateway",
+      "Subtitle": "Please wait while the Game Master prepares the world",
+      "DefaultMessage": "The Game Master is currently preparing the session. Feel free to chat with other players while you wait!",
+      "ServerStatus": "Server Status",
+      "Maintenance": "In Preparation",
+      "Ready": "Ready",
+      "EstimatedTime": "Estimated Time",
+      "ChatPlaceholder": "Send a message...",
+      "Send": "Send",
+      "EnterWorld": "Enter World",
+      "Poll": {
+        "Title": "Quick Poll",
+        "NoActive": "No active poll",
+        "Waiting": "Awaiting next poll from GM",
+        "VoteCast": "Your vote has been recorded",
+        "ChangeVote": "Click to change your vote"
+      },
+      "Players": {
+        "Title": "Players in Gateway",
+        "Online": "Online",
+        "Away": "Away"
+      },
+      "Countdown": {
+        "Complete": "Prep Complete!",
+        "Remaining": "remaining"
+      }
+    },
+    "ControlHub": {
+      "Title": "Gateway Control Hub",
+      "Tabs": {
+        "Main": "Main",
+        "Appearance": "Appearance",
+        "Countdown": "Countdown",
+        "Chat": "Chat Monitor",
+        "Polls": "Polls",
+        "Analytics": "Analytics"
+      },
+      "Toggle": {
+        "Activate": "Activate Gateway",
+        "Deactivate": "Deactivate Gateway",
+        "Status": "Gateway Status"
+      },
+      "Appearance": {
+        "Title": "Visual Settings",
+        "AccentColor": "Accent Color",
+        "Opacity": "Overlay Opacity",
+        "Blur": "Background Blur",
+        "Theme": "Theme Preset"
+      },
+      "Countdown": {
+        "Title": "Countdown Timer",
+        "Duration": "Duration (minutes)",
+        "Message": "Countdown Message",
+        "Start": "Start Countdown",
+        "Stop": "Stop Countdown",
+        "ShowProgress": "Show Progress Bar"
+      },
+      "Chat": {
+        "Title": "Chat Monitor",
+        "Clear": "Clear Chat",
+        "Broadcast": "Broadcast Message"
+      },
+      "Poll": {
+        "Title": "Poll Manager",
+        "Question": "Poll Question",
+        "Options": "Options (one per line)",
+        "Launch": "Launch Poll",
+        "Close": "Close Poll"
+      }
+    },
+    "Themes": {
+      "Nexus": "Nexus (Default)",
+      "Crimson": "Crimson Dawn",
+      "Midnight": "Midnight Vigil",
+      "Verdant": "Verdant Harbor",
+      "Ember": "Emberfall",
+      "Arctic": "Arctic Aurora",
+      "Void": "Void Walker"
+    },
+    "Tooltips": {
+      "OpenHub": "Open Gateway Control Hub",
+      "ToggleGateway": "Toggle Gateway On/Off",
+      "QuickCountdown": "Start Quick Countdown"
+    }
+  }
+}

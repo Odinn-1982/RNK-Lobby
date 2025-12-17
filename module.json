@@ -1,0 +1,232 @@
+{
+  "id": "rnk-gateway",
+  "title": "RNK Gateway",
+  "description": "A next-generation virtual lobby system for Foundry VTT. Keep players engaged in a beautiful, interactive environment while the GM preps the world. Features real-time chat, polls, countdown timers, character showcases, and stunning visual themes - all without exposing the game world.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "RNK",
+      "url": "https://github.com/Odinn-1982"
+    }
+  ],
+  "license": "MIT",
+  "esmodules": [
+    "scripts/gateway.js"
+  ],
+  "styles": [
+    "styles/gateway.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "es",
+      "name": "Spanish",
+      "path": "lang/es.json"
+    },
+    {
+      "lang": "fr",
+      "name": "French",
+      "path": "lang/fr.json"
+    },
+    {
+      "lang": "de",
+      "name": "German",
+      "path": "lang/de.json"
+    },
+    {
+      "lang": "it",
+      "name": "Italian",
+      "path": "lang/it.json"
+    },
+    {
+      "lang": "pt-BR",
+      "name": "Portuguese (Brazil)",
+      "path": "lang/pt-BR.json"
+    },
+    {
+      "lang": "ru",
+      "name": "Russian",
+      "path": "lang/ru.json"
+    },
+    {
+      "lang": "ja",
+      "name": "Japanese",
+      "path": "lang/ja.json"
+    },
+    {
+      "lang": "ko",
+      "name": "Korean",
+      "path": "lang/ko.json"
+    },
+    {
+      "lang": "zh-CN",
+      "name": "Chinese (Simplified)",
+      "path": "lang/zh-CN.json"
+    },
+    {
+      "lang": "zh-TW",
+      "name": "Chinese (Traditional)",
+      "path": "lang/zh-TW.json"
+    },
+    {
+      "lang": "pl",
+      "name": "Polish",
+      "path": "lang/pl.json"
+    },
+    {
+      "lang": "cs",
+      "name": "Czech",
+      "path": "lang/cs.json"
+    },
+    {
+      "lang": "sv",
+      "name": "Swedish",
+      "path": "lang/sv.json"
+    },
+    {
+      "lang": "da",
+      "name": "Danish",
+      "path": "lang/da.json"
+    },
+    {
+      "lang": "fi",
+      "name": "Finnish",
+      "path": "lang/fi.json"
+    },
+    {
+      "lang": "no",
+      "name": "Norwegian",
+      "path": "lang/no.json"
+    },
+    {
+      "lang": "nl",
+      "name": "Dutch",
+      "path": "lang/nl.json"
+    },
+    {
+      "lang": "tr",
+      "name": "Turkish",
+      "path": "lang/tr.json"
+    },
+    {
+      "lang": "hu",
+      "name": "Hungarian",
+      "path": "lang/hu.json"
+    },
+    {
+      "lang": "ro",
+      "name": "Romanian",
+      "path": "lang/ro.json"
+    },
+    {
+      "lang": "uk",
+      "name": "Ukrainian",
+      "path": "lang/uk.json"
+    },
+    {
+      "lang": "el",
+      "name": "Greek",
+      "path": "lang/el.json"
+    },
+    {
+      "lang": "bg",
+      "name": "Bulgarian",
+      "path": "lang/bg.json"
+    },
+    {
+      "lang": "sr",
+      "name": "Serbian",
+      "path": "lang/sr.json"
+    },
+    {
+      "lang": "hr",
+      "name": "Croatian",
+      "path": "lang/hr.json"
+    },
+    {
+      "lang": "sk",
+      "name": "Slovak",
+      "path": "lang/sk.json"
+    },
+    {
+      "lang": "sl",
+      "name": "Slovenian",
+      "path": "lang/sl.json"
+    },
+    {
+      "lang": "et",
+      "name": "Estonian",
+      "path": "lang/et.json"
+    },
+    {
+      "lang": "lv",
+      "name": "Latvian",
+      "path": "lang/lv.json"
+    },
+    {
+      "lang": "lt",
+      "name": "Lithuanian",
+      "path": "lang/lt.json"
+    },
+    {
+      "lang": "th",
+      "name": "Thai",
+      "path": "lang/th.json"
+    },
+    {
+      "lang": "vi",
+      "name": "Vietnamese",
+      "path": "lang/vi.json"
+    },
+    {
+      "lang": "id",
+      "name": "Indonesian",
+      "path": "lang/id.json"
+    },
+    {
+      "lang": "ms",
+      "name": "Malay",
+      "path": "lang/ms.json"
+    },
+    {
+      "lang": "hi",
+      "name": "Hindi",
+      "path": "lang/hi.json"
+    },
+    {
+      "lang": "ar",
+      "name": "Arabic",
+      "path": "lang/ar.json"
+    },
+    {
+      "lang": "he",
+      "name": "Hebrew",
+      "path": "lang/he.json"
+    },
+    {
+      "lang": "fa",
+      "name": "Persian",
+      "path": "lang/fa.json"
+    },
+    {
+      "lang": "ca",
+      "name": "Catalan",
+      "path": "lang/ca.json"
+    }
+  ],
+  "socket": true,
+  "url": "https://github.com/Odinn-1982/rnk-gateway",
+  "manifest": "https://raw.githubusercontent.com/Odinn-1982/rnk-gateway/master/module.json",
+  "download": "https://github.com/Odinn-1982/rnk-gateway/releases/download/v1.0.0/rnk-gateway.zip",
+  "readme": "README.md",
+  "changelog": "CHANGELOG.md",
+  "bugs": "https://github.com/Odinn-1982/rnk-gateway/issues"
+}

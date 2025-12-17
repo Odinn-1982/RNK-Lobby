@@ -1,0 +1,791 @@
+{{!-- Gateway Control Hub --}}
+<div class="gateway-hub-wrapper">
+  {{#if isActive}}
+  <div class="active-lobby-banner">
+    <i class="fas fa-broadcast-tower"></i>
+    <span>GATEWAY LOBBY IS ACTIVE - Players in waiting room</span>
+  </div>
+  {{/if}}
+
+  <div class="hub-header">
+    <div class="header-status">
+      <span class="status-badge {{#if isActive}}active{{/if}}">
+        <i class="fas {{#if isActive}}fa-broadcast-tower{{else}}fa-power-off{{/if}}"></i>
+        {{#if isActive}}LIVE{{else}}OFFLINE{{/if}}
+      </span>
+      {{#if isActive}}
+      <span class="session-time" id="session-duration">
+        <i class="fas fa-clock"></i> <span class="duration-value">00:00:00</span>
+      </span>
+      {{/if}}
+    </div>
+    <button type="button" id="gateway-toggle" class="power-button {{#if isActive}}active{{/if}}">
+      <i class="fas fa-power-off"></i>
+    </button>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <i class="fas fa-users"></i>
+      <span class="value">{{connectedUsers.length}}</span>
+      <span class="label">Online</span>
+    </div>
+    <div class="stat">
+      <i class="fas fa-comments"></i>
+      <span class="value">{{chat.length}}</span>
+      <span class="label">Messages</span>
+    </div>
+    <div class="stat">
+      <i class="fas fa-poll"></i>
+      <span class="value">{{totalVotes}}</span>
+      <span class="label">Votes</span>
+    </div>
+    <div class="stat">
+      <i class="fas fa-history"></i>
+      <span class="value">{{analytics.totalSessions}}</span>
+      <span class="label">Sessions</span>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    {{#each tabs}}
+    <button class="tab-button {{#if this.active}}active{{/if}}" data-action="change-tab" data-group="{{this.group}}" data-tab="{{this.id}}">
+      <i class="{{this.icon}}"></i>
+      <span>{{this.label}}</span>
+    </button>
+    {{/each}}
+  </nav>
+
+  <div class="tab-content-area">
+    {{#with (lookup tabs "dashboard")}}
+    <div class="tab {{#if this.active}}active{{/if}}" data-group="primary" data-tab="dashboard">
+      <div class="tab-grid">
+        {{!-- Quick Actions Panel --}}
+        <div class="hub-panel quick-actions-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+          </div>
+          <div class="quick-actions-grid">
+            <button type="button" class="quick-action" id="quick-countdown-5" data-action="countdown" data-minutes="5">
+              <i class="fas fa-clock"></i>
+              <span>5 Min Timer</span>
+            </button>
+            <button type="button" class="quick-action" id="quick-countdown-10" data-action="countdown" data-minutes="10">
+              <i class="fas fa-hourglass-half"></i>
+              <span>10 Min Timer</span>
+            </button>
+            <button type="button" class="quick-action" id="quick-countdown-15" data-action="countdown" data-minutes="15">
+              <i class="fas fa-hourglass"></i>
+              <span>15 Min Timer</span>
+            </button>
+            <button type="button" class="quick-action" id="quick-broadcast" data-action="broadcast">
+              <i class="fas fa-bullhorn"></i>
+              <span>Broadcast</span>
+            </button>
+            <button type="button" class="quick-action" id="quick-poll" data-action="poll">
+              <i class="fas fa-poll"></i>
+              <span>Quick Poll</span>
+            </button>
+            <button type="button" class="quick-action {{#if isActive}}danger{{/if}}" id="quick-toggle">
+              <i class="fas {{#if isActive}}fa-door-closed{{else}}fa-door-open{{/if}}"></i>
+              <span>{{#if isActive}}Close Gate{{else}}Open Gate{{/if}}</span>
+            </button>
+          </div>
+        </div>
+
+        {{!-- Connected Users Panel --}}
+        <div class="hub-panel users-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-users"></i> Connected Users</h3>
+            <span class="panel-badge">{{connectedUsers.length}} online</span>
+          </div>
+          <div class="users-list" id="connected-users-list">
+            {{#each connectedUsers}}
+            <div class="user-item {{#if this.isGM}}gm{{/if}} {{#if this.viewingGateway}}viewing{{/if}}">
+              <img src="{{this.avatar}}" alt="" class="user-avatar" />
+              <div class="user-info">
+                <span class="user-name">{{this.name}}</span>
+                <span class="user-status">
+                  {{#if this.isGM}}<i class="fas fa-crown"></i> GM{{else}}Player{{/if}}
+                  {{#if this.viewingGateway}}<span class="viewing-badge">Viewing Gateway</span>{{/if}}
+                </span>
+              </div>
+              <div class="user-indicator {{#if this.active}}online{{else}}away{{/if}}"></div>
+            </div>
+            {{else}}
+            <p class="empty-state">No users connected</p>
+            {{/each}}
+          </div>
+        </div>
+
+        {{!-- Activity Feed Panel --}}
+        <div class="hub-panel activity-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-stream"></i> Activity Feed</h3>
+            <button type="button" class="panel-action" id="clear-activity" title="Clear Activity">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+          <div class="activity-feed" id="activity-feed">
+            {{#each activityFeed}}
+            <div class="activity-item {{this.type}}">
+              <div class="activity-icon">
+                <i class="fas {{this.icon}}"></i>
+              </div>
+              <div class="activity-content">
+                <span class="activity-text">{{{this.message}}}</span>
+                <span class="activity-time">{{this.timeAgo}}</span>
+              </div>
+            </div>
+            {{else}}
+            <p class="empty-state"><i class="fas fa-inbox"></i> No recent activity</p>
+            {{/each}}
+          </div>
+        </div>
+
+        {{!-- Presets Panel --}}
+        <div class="hub-panel presets-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-bookmark"></i> Presets</h3>
+            <button type="button" class="panel-action" id="save-preset" title="Save Current Settings">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <div class="presets-list" id="presets-list">
+            {{#each presets}}
+            <div class="preset-item" data-preset-id="{{this.id}}">
+              <div class="preset-preview" style="background: {{this.theme.accent}}"></div>
+              <div class="preset-info">
+                <span class="preset-name">{{this.name}}</span>
+                <span class="preset-meta">{{this.theme.label}}</span>
+              </div>
+              <div class="preset-actions">
+                <button type="button" class="preset-load" data-preset-id="{{this.id}}" title="Load Preset">
+                  <i class="fas fa-upload"></i>
+                </button>
+                <button type="button" class="preset-delete" data-preset-id="{{this.id}}" title="Delete Preset">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            {{else}}
+            <p class="empty-state"><i class="fas fa-bookmark"></i> No saved presets</p>
+            <p class="empty-hint">Save your current appearance settings as a preset for quick access</p>
+            {{/each}}
+          </div>
+        </div>
+
+        {{!-- Welcome Message Panel --}}
+        <div class="hub-panel message-panel span-2">
+          <div class="panel-header">
+            <h3><i class="fas fa-comment-alt"></i> Welcome Message</h3>
+          </div>
+          <div class="form-group">
+            <textarea id="custom-message" class="message-input" placeholder="Enter a custom welcome message for players waiting in the gateway...">{{customMessage}}</textarea>
+          </div>
+          <div class="panel-footer">
+            <span class="char-count"><span id="message-char-count">{{customMessage.length}}</span> / 500</span>
+            <button type="button" id="save-message" class="hub-btn hub-btn-primary">
+              <i class="fas fa-save"></i> Update Message
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/with}}
+
+    {{!-- ─────────────────────────────────────────────────────────────────────
+         APPEARANCE TAB
+         ───────────────────────────────────────────────────────────────────── --}}
+    {{#with (lookup tabs "appearance")}}
+    <div class="tab {{#if this.active}}active{{/if}}" data-group="primary" data-tab="appearance">
+      <div class="tab-grid">
+        {{!-- Theme Selection --}}
+        <div class="hub-panel theme-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-swatchbook"></i> Theme</h3>
+          </div>
+          <div class="theme-grid">
+            {{#each themes}}
+            <button type="button" class="theme-card {{#if (gateway_eq this.id ../currentTheme)}}active{{/if}}" data-theme="{{this.id}}">
+              <div class="theme-preview">
+                <div class="theme-gradient" style="background: linear-gradient(135deg, {{this.accent}}, {{this.secondary}})"></div>
+                <div class="theme-glow" style="box-shadow: 0 0 30px {{this.glow}}"></div>
+              </div>
+              <span class="theme-name">{{this.label}}</span>
+              {{#if (gateway_eq this.id ../currentTheme)}}<i class="fas fa-check theme-check"></i>{{/if}}
+            </button>
+            {{/each}}
+          </div>
+        </div>
+
+        {{!-- Visual Controls --}}
+        <div class="hub-panel controls-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-sliders-h"></i> Visual Controls</h3>
+          </div>
+          
+          <div class="control-group">
+            <div class="control-header">
+              <label for="opacity-slider">Overlay Darkness</label>
+              <span class="control-value" id="opacity-value">{{appearance.overlayOpacity}}</span>
+            </div>
+            <div class="slider-container">
+              <i class="fas fa-sun slider-icon"></i>
+              <input type="range" id="opacity-slider" min="0.5" max="1" step="0.05" value="{{appearance.overlayOpacity}}">
+              <i class="fas fa-moon slider-icon"></i>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-header">
+              <label for="blur-slider">Background Blur</label>
+              <span class="control-value" id="blur-value">{{appearance.blurStrength}}px</span>
+            </div>
+            <div class="slider-container">
+              <i class="fas fa-eye slider-icon"></i>
+              <input type="range" id="blur-slider" min="0" max="40" step="2" value="{{appearance.blurStrength}}">
+              <i class="fas fa-eye-slash slider-icon"></i>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-header">
+              <label for="particle-slider">Particle Density</label>
+              <span class="control-value" id="particle-value">{{appearance.particleCount}}</span>
+            </div>
+            <div class="slider-container">
+              <i class="fas fa-wind slider-icon"></i>
+              <input type="range" id="particle-slider" min="0" max="100" step="5" value="{{appearance.particleCount}}">
+              <i class="fas fa-snowflake slider-icon"></i>
+            </div>
+          </div>
+
+          <div class="control-group toggle-group">
+            <label class="toggle-label">
+              <input type="checkbox" id="animations-toggle" {{#if appearance.animationsEnabled}}checked{{/if}}>
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">Enable Animations</span>
+            </label>
+          </div>
+        </div>
+
+        {{!-- Background Image --}}
+        <div class="hub-panel background-panel span-2">
+          <div class="panel-header">
+            <h3><i class="fas fa-image"></i> Background Image</h3>
+          </div>
+          <div class="background-preview-container">
+            <div class="background-preview" id="background-preview">
+              {{#if backgroundImage}}
+              <img src="{{backgroundImage}}" alt="Background Preview" />
+              {{else}}
+              <div class="no-preview">
+                <i class="fas fa-image"></i>
+                <span>No custom background</span>
+              </div>
+              {{/if}}
+            </div>
+            <div class="background-controls">
+              <div class="form-group">
+                <input type="text" id="background-image" value="{{backgroundImage}}" placeholder="Path to background image...">
+              </div>
+              <div class="button-group">
+                <button type="button" id="browse-background" class="hub-btn hub-btn-secondary">
+                  <i class="fas fa-folder-open"></i> Browse
+                </button>
+                <button type="button" id="clear-background" class="hub-btn hub-btn-ghost">
+                  <i class="fas fa-times"></i> Clear
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/with}}
+
+    {{!-- ─────────────────────────────────────────────────────────────────────
+         COUNTDOWN TAB
+         ───────────────────────────────────────────────────────────────────── --}}
+    {{#with (lookup tabs "countdown")}}
+    <div class="tab {{#if this.active}}active{{/if}}" data-group="primary" data-tab="countdown">
+      <div class="tab-grid">
+        {{!-- Active Countdown Display --}}
+        {{#if countdown.isActive}}
+        <div class="hub-panel countdown-active-panel span-2">
+          <div class="countdown-display">
+            <div class="countdown-ring" id="countdown-ring">
+              <svg viewBox="0 0 100 100">
+                <circle class="countdown-ring-bg" cx="50" cy="50" r="45"/>
+                <circle class="countdown-ring-progress" cx="50" cy="50" r="45" id="countdown-progress-ring"/>
+              </svg>
+              <div class="countdown-time" id="hub-countdown-time">--:--</div>
+            </div>
+            <div class="countdown-info">
+              <span class="countdown-label">{{countdown.message}}</span>
+              <div class="countdown-actions">
+                <button type="button" id="add-time-1" class="hub-btn hub-btn-ghost">
+                  <i class="fas fa-plus"></i> 1 min
+                </button>
+                <button type="button" id="add-time-5" class="hub-btn hub-btn-ghost">
+                  <i class="fas fa-plus"></i> 5 min
+                </button>
+                <button type="button" id="stop-countdown" class="hub-btn hub-btn-danger">
+                  <i class="fas fa-stop"></i> Stop
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{else}}
+        {{!-- Countdown Setup --}}
+        <div class="hub-panel countdown-setup-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-stopwatch"></i> Set Timer</h3>
+          </div>
+          <div class="countdown-presets">
+            <button type="button" class="countdown-preset" data-minutes="5">5 min</button>
+            <button type="button" class="countdown-preset" data-minutes="10">10 min</button>
+            <button type="button" class="countdown-preset" data-minutes="15">15 min</button>
+            <button type="button" class="countdown-preset" data-minutes="30">30 min</button>
+          </div>
+          <div class="countdown-custom">
+            <div class="form-group">
+              <label>Custom Duration</label>
+              <div class="time-input-group">
+                <input type="number" id="countdown-hours" min="0" max="4" value="0" placeholder="H">
+                <span class="time-separator">:</span>
+                <input type="number" id="countdown-minutes" min="0" max="59" value="5" placeholder="M">
+                <span class="time-separator">:</span>
+                <input type="number" id="countdown-seconds" min="0" max="59" value="0" placeholder="S">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hub-panel countdown-options-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-cog"></i> Options</h3>
+          </div>
+          <div class="form-group">
+            <label for="countdown-message">Display Message</label>
+            <input type="text" id="countdown-message" value="{{countdown.message}}" placeholder="Session begins in">
+          </div>
+          <div class="control-group toggle-group">
+            <label class="toggle-label">
+              <input type="checkbox" id="countdown-auto-deactivate" {{#if countdown.autoDeactivate}}checked{{/if}}>
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">Auto-deactivate when complete</span>
+            </label>
+          </div>
+          <div class="control-group toggle-group">
+            <label class="toggle-label">
+              <input type="checkbox" id="countdown-show-progress" {{#if countdown.showProgressBar}}checked{{/if}}>
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">Show progress bar</span>
+            </label>
+          </div>
+          <button type="button" id="start-countdown" class="hub-btn hub-btn-primary hub-btn-lg">
+            <i class="fas fa-play"></i> Start Countdown
+          </button>
+        </div>
+        {{/if}}
+
+        {{!-- Recent Countdowns --}}
+        <div class="hub-panel countdown-history-panel span-2">
+          <div class="panel-header">
+            <h3><i class="fas fa-history"></i> Recent Timers</h3>
+          </div>
+          <div class="countdown-history-list">
+            {{#each countdownHistory}}
+            <div class="history-item">
+              <div class="history-icon"><i class="fas fa-clock"></i></div>
+              <div class="history-info">
+                <span class="history-duration">{{this.durationFormatted}}</span>
+                <span class="history-message">{{this.message}}</span>
+              </div>
+              <button type="button" class="history-reuse" data-duration="{{this.duration}}" data-message="{{this.message}}" title="Use Again">
+                <i class="fas fa-redo"></i>
+              </button>
+            </div>
+            {{else}}
+            <p class="empty-state">No countdown history yet</p>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/with}}
+
+    {{!-- ─────────────────────────────────────────────────────────────────────
+         CHAT TAB
+         ───────────────────────────────────────────────────────────────────── --}}
+    {{#with (lookup tabs "chat")}}
+    <div class="tab {{#if this.active}}active{{/if}}" data-group="primary" data-tab="chat">
+      <div class="tab-grid">
+        {{!-- Chat Monitor --}}
+        <div class="hub-panel chat-monitor-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-comments"></i> Live Chat</h3>
+            <div class="panel-actions">
+              <button type="button" class="panel-action" id="export-chat" title="Export Chat Log">
+                <i class="fas fa-download"></i>
+              </button>
+              <button type="button" class="panel-action danger" id="clear-chat" title="Clear All Messages">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="chat-filter-bar">
+            <input type="text" id="chat-search" placeholder="Search messages..." class="chat-search-input">
+            <select id="chat-filter-user" class="chat-filter-select">
+              <option value="">All Users</option>
+              {{#each connectedUsers}}
+              <option value="{{this.id}}">{{this.name}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="chat-messages-container" id="chat-messages-container">
+            {{#each chat}}
+            <div class="chat-message {{#if this.isGM}}gm{{/if}} {{#if this.isSystem}}system{{/if}}" data-user-id="{{this.userId}}">
+              <img src="{{this.avatar}}" alt="" class="chat-avatar" />
+              <div class="chat-content">
+                <div class="chat-header">
+                  <span class="chat-author">{{this.author}}</span>
+                  {{#if this.isGM}}<span class="chat-badge gm"><i class="fas fa-crown"></i></span>{{/if}}
+                  <span class="chat-timestamp">{{this.timeFormatted}}</span>
+                </div>
+                <p class="chat-text">{{this.content}}</p>
+              </div>
+              <button type="button" class="chat-delete" data-message-id="{{this.id}}" title="Delete Message">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            {{else}}
+            <div class="chat-empty">
+              <i class="fas fa-comments"></i>
+              <span>No messages yet</span>
+              <p>Messages from players will appear here</p>
+            </div>
+            {{/each}}
+          </div>
+        </div>
+
+        {{!-- GM Broadcast --}}
+        <div class="hub-panel broadcast-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-bullhorn"></i> GM Broadcast</h3>
+          </div>
+          <div class="broadcast-options">
+            <div class="broadcast-type-selector">
+              <button type="button" class="broadcast-type active" data-type="normal">
+                <i class="fas fa-comment"></i> Normal
+              </button>
+              <button type="button" class="broadcast-type" data-type="announcement">
+                <i class="fas fa-exclamation-circle"></i> Announcement
+              </button>
+              <button type="button" class="broadcast-type" data-type="alert">
+                <i class="fas fa-bell"></i> Alert
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <textarea id="broadcast-input" class="broadcast-textarea" placeholder="Type your message to all players..."></textarea>
+          </div>
+          <div class="panel-footer">
+            <span class="char-count"><span id="broadcast-char-count">0</span> / 500</span>
+            <button type="button" id="broadcast-message" class="hub-btn hub-btn-primary">
+              <i class="fas fa-paper-plane"></i> Send
+            </button>
+          </div>
+
+          {{!-- Quick Replies --}}
+          <div class="quick-replies">
+            <span class="quick-replies-label">Quick:</span>
+            <button type="button" class="quick-reply" data-message="Starting soon!">Starting soon!</button>
+            <button type="button" class="quick-reply" data-message="5 more minutes">5 more minutes</button>
+            <button type="button" class="quick-reply" data-message="Thanks for waiting!">Thanks for waiting!</button>
+          </div>
+        </div>
+
+        {{!-- Chat Stats --}}
+        <div class="hub-panel chat-stats-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-chart-bar"></i> Chat Stats</h3>
+          </div>
+          <div class="chat-stats">
+            <div class="chat-stat">
+              <span class="chat-stat-value">{{chat.length}}</span>
+              <span class="chat-stat-label">Total Messages</span>
+            </div>
+            <div class="chat-stat">
+              <span class="chat-stat-value">{{chatStats.uniqueUsers}}</span>
+              <span class="chat-stat-label">Participants</span>
+            </div>
+            <div class="chat-stat">
+              <span class="chat-stat-value">{{chatStats.avgLength}}</span>
+              <span class="chat-stat-label">Avg. Length</span>
+            </div>
+          </div>
+          <div class="top-chatters">
+            <h4>Most Active</h4>
+            {{#each chatStats.topChatters}}
+            <div class="top-chatter">
+              <img src="{{this.avatar}}" alt="" class="chatter-avatar" />
+              <span class="chatter-name">{{this.name}}</span>
+              <span class="chatter-count">{{this.count}} msgs</span>
+            </div>
+            {{else}}
+            <p class="empty-state">No chat activity</p>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/with}}
+
+    {{!-- ─────────────────────────────────────────────────────────────────────
+         POLLS TAB
+         ───────────────────────────────────────────────────────────────────── --}}
+    {{#with (lookup tabs "polls")}}
+    <div class="tab {{#if this.active}}active{{/if}}" data-group="primary" data-tab="polls">
+      <div class="tab-grid">
+        {{#if poll.active}}
+        {{!-- Active Poll Display --}}
+        <div class="hub-panel active-poll-panel span-2">
+          <div class="panel-header">
+            <h3><i class="fas fa-poll"></i> Live Poll</h3>
+            <span class="live-indicator"><span class="pulse"></span> LIVE</span>
+          </div>
+          <div class="poll-question">{{poll.question}}</div>
+          <div class="poll-results">
+            {{#each poll.options}}
+            <div class="poll-result-item">
+              <div class="poll-result-header">
+                <span class="poll-option-text">{{this.text}}</span>
+                <span class="poll-option-stats">{{this.votes}} votes ({{this.percentage}}%)</span>
+              </div>
+              <div class="poll-result-bar-container">
+                <div class="poll-result-bar" style="width: {{this.percentage}}%"></div>
+              </div>
+              <div class="poll-voters">
+                {{#each this.voters}}
+                <img src="{{this.avatar}}" alt="{{this.name}}" title="{{this.name}}" class="voter-avatar" />
+                {{/each}}
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          <div class="poll-summary">
+            <span class="poll-total"><i class="fas fa-users"></i> {{poll.totalVotes}} total votes</span>
+            <span class="poll-participation"><i class="fas fa-percentage"></i> {{poll.participationRate}}% participation</span>
+          </div>
+          <div class="poll-actions">
+            <button type="button" id="close-poll" class="hub-btn hub-btn-danger">
+              <i class="fas fa-stop"></i> End Poll
+            </button>
+            <button type="button" id="reset-poll" class="hub-btn hub-btn-ghost">
+              <i class="fas fa-redo"></i> Reset Votes
+            </button>
+          </div>
+        </div>
+        {{else}}
+        {{!-- Create Poll --}}
+        <div class="hub-panel create-poll-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-plus-circle"></i> Create Poll</h3>
+          </div>
+          <div class="form-group">
+            <label for="poll-question">Question</label>
+            <input type="text" id="poll-question" placeholder="What should we do tonight?" class="poll-question-input">
+          </div>
+          <div class="form-group">
+            <label>Options</label>
+            <div class="poll-options-builder" id="poll-options-builder">
+              <div class="poll-option-input">
+                <input type="text" placeholder="Option 1" class="poll-option">
+                <button type="button" class="remove-option" disabled><i class="fas fa-times"></i></button>
+              </div>
+              <div class="poll-option-input">
+                <input type="text" placeholder="Option 2" class="poll-option">
+                <button type="button" class="remove-option" disabled><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <button type="button" id="add-poll-option" class="hub-btn hub-btn-ghost hub-btn-sm">
+              <i class="fas fa-plus"></i> Add Option
+            </button>
+          </div>
+          <button type="button" id="create-poll" class="hub-btn hub-btn-primary hub-btn-lg">
+            <i class="fas fa-rocket"></i> Launch Poll
+          </button>
+        </div>
+
+        {{!-- Poll Templates --}}
+        <div class="hub-panel poll-templates-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-magic"></i> Quick Templates</h3>
+          </div>
+          <div class="poll-templates">
+            <button type="button" class="poll-template" data-template="ready-check">
+              <i class="fas fa-check-circle"></i>
+              <span>Ready Check</span>
+            </button>
+            <button type="button" class="poll-template" data-template="break-vote">
+              <i class="fas fa-coffee"></i>
+              <span>Break Vote</span>
+            </button>
+            <button type="button" class="poll-template" data-template="decision">
+              <i class="fas fa-random"></i>
+              <span>Group Decision</span>
+            </button>
+            <button type="button" class="poll-template" data-template="rating">
+              <i class="fas fa-star"></i>
+              <span>Session Rating</span>
+            </button>
+          </div>
+        </div>
+        {{/if}}
+
+        {{!-- Poll History --}}
+        <div class="hub-panel poll-history-panel {{#unless poll.active}}span-2{{/unless}}">
+          <div class="panel-header">
+            <h3><i class="fas fa-history"></i> Poll History</h3>
+          </div>
+          <div class="poll-history-list">
+            {{#each pollHistory}}
+            <div class="poll-history-item">
+              <div class="poll-history-question">{{this.question}}</div>
+              <div class="poll-history-meta">
+                <span><i class="fas fa-users"></i> {{this.totalVotes}} votes</span>
+                <span><i class="fas fa-trophy"></i> {{this.winner}}</span>
+                <span><i class="fas fa-calendar"></i> {{this.dateFormatted}}</span>
+              </div>
+            </div>
+            {{else}}
+            <p class="empty-state"><i class="fas fa-poll"></i> No poll history yet</p>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/with}}
+
+    {{!-- ─────────────────────────────────────────────────────────────────────
+         ANALYTICS TAB
+         ───────────────────────────────────────────────────────────────────── --}}
+    {{#with (lookup tabs "analytics")}}
+    <div class="tab {{#if this.active}}active{{/if}}" data-group="primary" data-tab="analytics">
+      <div class="tab-grid">
+        {{!-- Session Overview --}}
+        <div class="hub-panel analytics-overview-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-chart-pie"></i> Overview</h3>
+          </div>
+          <div class="analytics-stats">
+            <div class="analytics-stat">
+              <div class="stat-ring" style="--progress: {{analytics.avgEngagement}}%">
+                <span class="stat-ring-value">{{analytics.avgEngagement}}%</span>
+              </div>
+              <span class="stat-label">Avg. Engagement</span>
+            </div>
+            <div class="analytics-stat">
+              <span class="stat-big-value">{{analytics.totalSessions}}</span>
+              <span class="stat-label">Total Sessions</span>
+            </div>
+            <div class="analytics-stat">
+              <span class="stat-big-value">{{analytics.totalTimeFormatted}}</span>
+              <span class="stat-label">Total Gateway Time</span>
+            </div>
+            <div class="analytics-stat">
+              <span class="stat-big-value">{{analytics.avgSessionLength}}</span>
+              <span class="stat-label">Avg. Session</span>
+            </div>
+          </div>
+        </div>
+
+        {{!-- Usage Graph --}}
+        <div class="hub-panel analytics-graph-panel">
+          <div class="panel-header">
+            <h3><i class="fas fa-chart-line"></i> Usage Over Time</h3>
+          </div>
+          <div class="usage-graph" id="usage-graph">
+            <div class="graph-bars">
+              {{#each analytics.weeklyUsage}}
+              <div class="graph-bar-container">
+                <div class="graph-bar" style="height: {{this.percentage}}%" title="{{this.label}}: {{this.value}} sessions"></div>
+                <span class="graph-label">{{this.day}}</span>
+              </div>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+
+        {{!-- Recent Sessions --}}
+        <div class="hub-panel recent-sessions-panel span-2">
+          <div class="panel-header">
+            <h3><i class="fas fa-clock"></i> Recent Sessions</h3>
+            <button type="button" class="panel-action" id="clear-analytics" title="Clear Analytics Data">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+          <div class="sessions-list">
+            {{#each analytics.recentSessions}}
+            <div class="session-item">
+              <div class="session-date">
+                <span class="session-day">{{this.dayOfWeek}}</span>
+                <span class="session-full-date">{{this.dateFormatted}}</span>
+              </div>
+              <div class="session-details">
+                <span class="session-duration"><i class="fas fa-hourglass-half"></i> {{this.durationFormatted}}</span>
+                <span class="session-messages"><i class="fas fa-comments"></i> {{this.messageCount}} messages</span>
+                <span class="session-polls"><i class="fas fa-poll"></i> {{this.pollCount}} polls</span>
+              </div>
+              <div class="session-players">
+                {{#each this.players}}
+                <img src="{{this.avatar}}" alt="{{this.name}}" title="{{this.name}}" class="session-player-avatar" />
+                {{/each}}
+              </div>
+            </div>
+            {{else}}
+            <p class="empty-state"><i class="fas fa-chart-line"></i> No session data yet</p>
+            <p class="empty-hint">Analytics will appear after your first gateway session</p>
+            {{/each}}
+          </div>
+        </div>
+
+        {{!-- Feature Usage --}}
+        <div class="hub-panel feature-usage-panel span-2">
+          <div class="panel-header">
+            <h3><i class="fas fa-puzzle-piece"></i> Feature Usage</h3>
+          </div>
+          <div class="feature-bars">
+            <div class="feature-bar-item">
+              <span class="feature-name"><i class="fas fa-comments"></i> Chat</span>
+              <div class="feature-bar-track">
+                <div class="feature-bar-fill" style="width: {{analytics.featureUsage.chat}}%"></div>
+              </div>
+              <span class="feature-percentage">{{analytics.featureUsage.chat}}%</span>
+            </div>
+            <div class="feature-bar-item">
+              <span class="feature-name"><i class="fas fa-poll"></i> Polls</span>
+              <div class="feature-bar-track">
+                <div class="feature-bar-fill" style="width: {{analytics.featureUsage.polls}}%"></div>
+              </div>
+              <span class="feature-percentage">{{analytics.featureUsage.polls}}%</span>
+            </div>
+            <div class="feature-bar-item">
+              <span class="feature-name"><i class="fas fa-clock"></i> Countdown</span>
+              <div class="feature-bar-track">
+                <div class="feature-bar-fill" style="width: {{analytics.featureUsage.countdown}}%"></div>
+              </div>
+              <span class="feature-percentage">{{analytics.featureUsage.countdown}}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/with}}
+
+  </div>
+</div>
