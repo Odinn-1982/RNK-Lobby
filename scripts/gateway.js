@@ -26,6 +26,42 @@ const MODULE_TITLE = "RNK Gateway";
 // RNK CODEX REGISTRATION - Must be at top level before hooks
 // ════════════════════════════════════════════════════════════════════════════════
 
+// ════════════════════════════════════════════════════════════════════════════════
+// LAZY LOADING INITIALIZATION
+// ════════════════════════════════════════════════════════════════════════════════
+
+let _gatewayInitialized = false;
+
+function initializeGatewayIfNeeded() {
+  if (_gatewayInitialized) return;
+  _gatewayInitialized = true;
+  
+  console.log(`${MODULE_TITLE} | 🚀 Lazy loading on first use...`);
+  
+  // Perform all initialization NOW
+  RNKGateway.registerSettings();
+  RNKGateway.registerHelpers();
+  RNKGateway.loadState();
+  RNKGateway.setupSocket();
+  
+  // Register hooks NOW (not at module load)
+  Hooks.on("renderSidebar", () => {
+    if (game.user?.isGM) {
+      setTimeout(() => RNKGateway.addSidebarButton(), 100);
+    }
+  });
+  
+  Hooks.on("userConnected", () => RNKGateway.updatePlayersDisplay());
+  Hooks.on("userDisconnected", () => RNKGateway.updatePlayersDisplay());
+  
+  // Expose API
+  const module = game.modules.get(MODULE_ID);
+  if (module) module.api = RNKGateway;
+  globalThis.RNKGateway = RNKGateway;
+  
+  console.log(`${MODULE_TITLE} | ✅ Lazy initialization complete`);
+}
+
 // Register with RNK Codex immediately (before hooks fire)
 globalThis.RNK_MODULES = globalThis.RNK_MODULES || [];
 globalThis.RNK_MODULES.push({
@@ -37,12 +73,12 @@ globalThis.RNK_MODULES.push({
   order: 5,
   quantumPortal: true,
   onClick: () => {
-    if (globalThis.RNKGateway?.openControlHub) {
-      globalThis.RNKGateway.openControlHub();
-    }
+    // Lazy load on first click
+    initializeGatewayIfNeeded();
+    RNKGateway.openControlHub();
   }
 });
-console.log(`${MODULE_TITLE} | Registered with RNK Codex (Column B)`);
+console.log(`${MODULE_TITLE} | Registered with RNK Codex (Column B) - Lazy Loading Enabled`);
 
 // ════════════════════════════════════════════════════════════════════════════════
 // CONSTANTS & CONFIGURATION
@@ -223,44 +259,19 @@ class RNKGateway {
   };
 
   // ──────────────────────────────────────────────────────────────────────────────
-  // INITIALIZATION
+  // INITIALIZATION - Deferred until first use
   // ──────────────────────────────────────────────────────────────────────────────
 
-  static init() {
-    console.log(`${MODULE_TITLE} | Initializing...`);
-    RNKGateway.registerSettings();
-    RNKGateway.registerHelpers();
-    
-    // Expose API
-    const module = game.modules.get(MODULE_ID);
-    if (module) module.api = RNKGateway;
-  }
-
-  static ready() {
-    console.log(`${MODULE_TITLE} | Ready`);
-    
-    // Load state from settings
-    RNKGateway.loadState();
-    
-    // Set up socket listeners
-    RNKGateway.setupSocket();
-    
-    // Check if gateway should be active
-    if (RNKGateway.state.isActive) {
-      if (game.user.isGM) {
-        RNKGateway.updateGMIndicator(true);
-        const gmPreview = game.settings.get(MODULE_ID, SETTINGS.GM_PREVIEW);
-        if (gmPreview) RNKGateway.showOverlay();
-      } else {
-        RNKGateway.showOverlay();
-        RNKGateway.requestState();
-      }
-    }
-
-    // Add GM sidebar button (fallback if codex not present)
-    if (game.user.isGM) {
-      setTimeout(() => RNKGateway.addSidebarButton(), 300);
-    }
+  // NOTE: These methods are NO LONGER called at module load.
+  // All initialization is deferred until first use via initializeGatewayIfNeeded()
+  
+  // ──────────────────────────────────────────────────────────────────────────────
+  // SETTINGS REGISTRATION
+  // ──────────────────────────────────────────────────────────────────────────────
+  
+  static registerSettings() {
+    // Gateway Active
+    game.settings.register(MODULE_ID, SETTINGS.GATEWAY_ACTIVE, {
     
     // Register keyboard handler
     document.addEventListener("keydown", RNKGateway.onKeyDown, true);
@@ -1355,12 +1366,28 @@ class RNKGateway {
   // ──────────────────────────────────────────────────────────────────────────────
 
   static openControlHub() {
-    if (!game.user.isGM) return;
+    console.log("Gateway - openControlHub() called");
+    
+    try {
+      if (!game.user.isGM) {
+        console.log("Gateway - User is not GM, aborting");
+        return;
+      }
 
-    if (!RNKGateway.apps.hub) {
-      RNKGateway.apps.hub = new GatewayControlHub();
+      console.log("Gateway - Checking for existing hub instance...");
+      if (!RNKGateway.apps.hub) {
+        console.log("Gateway - Creating new GatewayControlHub instance...");
+        RNKGateway.apps.hub = new GatewayControlHub();
+        console.log("Gateway - GatewayControlHub instance created");
+      }
+      
+      console.log("Gateway - Rendering control hub...");
+      RNKGateway.apps.hub.render(true);
+      console.log("Gateway - Control hub render() called successfully");
+    } catch (error) {
+      console.error("Gateway - Error in openControlHub():", error);
+      ui.notifications?.error("Failed to open Gateway Control Hub. Check console for details.");
     }
-    RNKGateway.apps.hub.render(true);
   }
 
   // ──────────────────────────────────────────────────────────────────────────────
@@ -1865,68 +1892,86 @@ class GatewayControlHub extends foundry.applications.api.HandlebarsApplicationMi
 
   async _prepareContext(options) {
     console.log("Gateway Control Hub - _prepareContext() called");
-    const state = RNKGateway.getFullState();
-    console.log("Gateway Control Hub - State:", state);
-    const poll = state.poll || { ...DEFAULT_POLL };
     
-    // Calculate poll data for display
-    const totalVotes = poll.active ? (poll.options || []).reduce((sum, opt) => sum + (opt.votes || 0), 0) : 0;
-    const activePlayers = game.users ? game.users.filter(u => u.active && !u.isGM).length : 0;
-    const participationRate = poll.active && activePlayers > 0
-      ? Math.round((Object.keys(poll.responses || {}).length / activePlayers) * 100)
-      : 0;
-
-    // Add percentage and voters to poll options
-    const pollWithData = {
-      ...poll,
-      totalVotes,
-      participationRate,
-      options: (poll.options || []).map(opt => {
-        const votes = opt.votes || 0;
-        const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
-        // Get voters for this option
-        const voters = Object.entries(poll.responses || {})
-          .filter(([userId, optId]) => optId === opt.id)
-          .map(([userId]) => {
-            const user = game.users?.get(userId);
-            return user ? { id: userId, name: user.name, avatar: user.avatar || "icons/svg/mystery-man.svg" } : null;
-          })
-          .filter(Boolean);
-        return { ...opt, percentage, voters };
-      })
-    };
-
-    // Format chat messages with timestamps
-    const chatFormatted = (state.chat || []).map(msg => ({
-      ...msg,
-      timeFormatted: new Date(msg.timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
-    }));
-
-    const tabs = this._prepareTabs("primary");
-    
-    const data = {
-      tabs,
-      isActive: state.isActive || false,
-      appearance: state.appearance || { ...DEFAULT_APPEARANCE },
-      countdown: state.countdown || { ...DEFAULT_COUNTDOWN },
-      poll: pollWithData,
-      chat: chatFormatted,
-      themes: Object.values(THEMES),
-      currentTheme: (state.appearance || DEFAULT_APPEARANCE).theme,
-      customMessage: state.customMessage || "",
-      backgroundImage: state.backgroundImage || "",
+    try {
+      console.log("Gateway Control Hub - Getting full state...");
+      const state = RNKGateway.getFullState();
+      console.log("Gateway Control Hub - State retrieved");
       
-      // New data
-      connectedUsers: RNKGateway.getConnectedUsers(),
-      activityFeed: RNKGateway.getActivityFeedFormatted(),
-      presets: RNKGateway.state.presets || [],
-      pollHistory: RNKGateway.state.pollHistory || [],
-      countdownHistory: RNKGateway.state.countdownHistory || [],
-      analytics: RNKGateway.getAnalyticsFormatted(),
-      chatStats: RNKGateway.getChatStats(),
-      sessionStart: RNKGateway.state.sessionStart || null,
-      totalVotes
-    };
+      const poll = state.poll || { ...DEFAULT_POLL };
+      
+      console.log("Gateway Control Hub - Calculating poll data...");
+      // Calculate poll data for display
+      const totalVotes = poll.active ? (poll.options || []).reduce((sum, opt) => sum + (opt.votes || 0), 0) : 0;
+      const activePlayers = game.users ? game.users.filter(u => u.active && !u.isGM).length : 0;
+      const participationRate = poll.active && activePlayers > 0
+        ? Math.round((Object.keys(poll.responses || {}).length / activePlayers) * 100)
+        : 0;
+
+      console.log("Gateway Control Hub - Processing poll options...");
+      // Add percentage and voters to poll options
+      const pollWithData = {
+        ...poll,
+        totalVotes,
+        participationRate,
+        options: (poll.options || []).map(opt => {
+          const votes = opt.votes || 0;
+          const percentage = totalVotes > 0 ? Math.round((votes / totalVotes) * 100) : 0;
+          // Get voters for this option
+          const voters = Object.entries(poll.responses || {})
+            .filter(([userId, optId]) => optId === opt.id)
+            .map(([userId]) => {
+              const user = game.users?.get(userId);
+              return user ? { id: userId, name: user.name, avatar: user.avatar || "icons/svg/mystery-man.svg" } : null;
+            })
+            .filter(Boolean);
+          return { ...opt, percentage, voters };
+        })
+      };
+
+      console.log("Gateway Control Hub - Formatting chat messages...");
+      // Format chat messages with timestamps
+      const chatFormatted = (state.chat || []).map(msg => ({
+        ...msg,
+        timeFormatted: new Date(msg.timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
+      }));
+
+      console.log("Gateway Control Hub - Preparing tabs...");
+      const tabs = this._prepareTabs("primary");
+      
+      console.log("Gateway Control Hub - Getting additional data...");
+      const data = {
+        tabs,
+        isActive: state.isActive || false,
+        appearance: state.appearance || { ...DEFAULT_APPEARANCE },
+        countdown: state.countdown || { ...DEFAULT_COUNTDOWN },
+        poll: pollWithData,
+        chat: chatFormatted,
+        themes: Object.values(THEMES),
+        currentTheme: (state.appearance || DEFAULT_APPEARANCE).theme,
+        customMessage: state.customMessage || "",
+        backgroundImage: state.backgroundImage || "",
+        
+        // New data
+        connectedUsers: RNKGateway.getConnectedUsers(),
+        activityFeed: RNKGateway.getActivityFeedFormatted(),
+        presets: RNKGateway.state.presets || [],
+        pollHistory: RNKGateway.state.pollHistory || [],
+        countdownHistory: RNKGateway.state.countdownHistory || [],
+        analytics: RNKGateway.getAnalyticsFormatted(),
+        chatStats: RNKGateway.getChatStats(),
+        sessionStart: RNKGateway.state.sessionStart || null,
+        totalVotes
+      };
+      
+      console.log("Gateway Control Hub - _prepareContext() completed successfully");
+      return data;
+    } catch (error) {
+      console.error("Gateway Control Hub - Error in _prepareContext():", error);
+      ui.notifications?.error("Failed to load Gateway Control Hub. Check console for details.");
+      throw error;
+    }
+  }
     
     console.log("Gateway Control Hub - Returning data:", data);
     return data;
@@ -2452,25 +2497,10 @@ Hooks.on("renderSidebar", () => {
 });
 
 // Update players display when users change
-Hooks.on("userConnected", () => RNKGateway.updatePlayersDisplay());
-Hooks.on("userDisconnected", () => RNKGateway.updatePlayersDisplay());
-
-// Export for module API
-globalThis.RNKGateway = RNKGateway;
-
-function registerGatewayWithCodex() {
-  registerRNKModule({
-    id: MODULE_ID,
-    title: MODULE_TITLE,
-    icon: 'fa-solid fa-dungeon',
-    applicationClass: 'gateway-control-hub',
-    windowSelector: '#gateway-control-hub',
-    order: 5,
-    onClick: () => RNKGateway.openControlHub()
-  });
-}
-
-function registerRNKModule(config) {
+HooLAZY LOADING - NO HOOKS AT MODULE LOAD
+// ════════════════════════════════════════════════════════════════════════════════
+// All hooks are registered inside initializeGatewayIfNeeded() when first triggered
+// This prevents unnecessary initialization if Gateway is never used{
   if (!config?.id || typeof config.onClick !== 'function') {
     console.warn('RNK Gateway | Invalid RNK module registration', config);
     return false;
