@@ -2792,3 +2792,189 @@
   color: var(--hub-accent);
   font-weight: 600;
 }
+
+/* ────────────────────────────────────────────────────────────────────────────────
+   NEW LAYOUT: BANNER & CENTERED CHAT (OVERRIDES)
+   ──────────────────────────────────────────────────────────────────────────────── */
+
+/* Hide old layout elements */
+.gateway-header { display: none !important; }
+.gateway-content { display: none !important; }
+
+/* Banner Styles */
+.gateway-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--gateway-gap-md) var(--gateway-gap-lg);
+  background: var(--gateway-glass-bg);
+  border-bottom: 1px solid var(--gateway-glass-border);
+  backdrop-filter: blur(var(--gateway-blur));
+  height: 80px;
+  flex-shrink: 0;
+  animation: gateway-fade-in 0.5s ease-out;
+  z-index: 100;
+}
+
+.gateway-banner-left, .gateway-banner-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.gateway-banner-right {
+  justify-content: flex-end;
+}
+
+.gateway-banner-center {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gateway-gap-xl);
+}
+
+/* Logo Small */
+.gateway-logo-small {
+  display: flex;
+  align-items: center;
+  gap: var(--gateway-gap-sm);
+}
+
+.gateway-logo-icon-small {
+  font-size: 1.5rem;
+  color: var(--gateway-accent);
+  animation: gateway-pulse 3s infinite;
+}
+
+.gateway-title-small {
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--gateway-text-primary), var(--gateway-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Compact Status */
+.gateway-status-compact {
+  display: flex;
+  align-items: center;
+  gap: var(--gateway-gap-xs);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--gateway-glass-border);
+}
+
+.gateway-status-dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #10b981;
+}
+
+.gateway-status-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gateway-text-secondary);
+}
+
+/* Compact Countdown */
+.gateway-countdown-compact {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gateway-accent);
+  text-shadow: 0 0 20px var(--gateway-glow);
+}
+
+/* Compact Message */
+.gateway-message-compact {
+  font-size: 0.9rem;
+  color: var(--gateway-text-secondary);
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Compact User */
+.gateway-user-compact {
+  display: flex;
+  align-items: center;
+  gap: var(--gateway-gap-sm);
+}
+
+.gateway-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--gateway-accent);
+}
+
+.gateway-user-name {
+  font-weight: 600;
+  color: var(--gateway-text-primary);
+}
+
+/* Main Area */
+.gateway-main-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: var(--gateway-gap-xl);
+}
+
+/* Poll Wrapper */
+.gateway-poll-wrapper {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  z-index: 10;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.gateway-poll-wrapper.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-20px);
+}
+
+/* Centered Chat */
+.centered-chat {
+  width: 100%;
+  max-width: 800px;
+  height: 60vh;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+  background: rgba(10, 10, 18, 0.6);
+  backdrop-filter: blur(5px);
+}
+
+.centered-chat:hover,
+.centered-chat.active,
+.centered-chat:focus-within {
+  opacity: 1;
+  background: var(--gateway-glass-bg);
+  box-shadow: var(--gateway-shadow);
+  backdrop-filter: blur(var(--gateway-blur));
+}
+
+/* Ensure chat messages take up space */
+.gateway-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: var(--gateway-gap-sm);
+}
+
+/* Utility */
+.hidden {
+  display: none !important;
+}

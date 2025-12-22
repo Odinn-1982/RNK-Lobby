@@ -86,9 +86,9 @@
               <i class="fas fa-poll"></i>
               <span>Quick Poll</span>
             </button>
-            <button type="button" class="quick-action {{#if isActive}}danger{{/if}}" id="quick-toggle">
-              <i class="fas {{#if isActive}}fa-door-closed{{else}}fa-door-open{{/if}}"></i>
-              <span>{{#if isActive}}Close Gate{{else}}Open Gate{{/if}}</span>
+            <button type="button" class="quick-action {{#if ../isActive}}danger{{/if}}" id="quick-toggle">
+              <i class="fas {{#if ../isActive}}fa-door-closed{{else}}fa-door-open{{/if}}"></i>
+              <span>{{#if ../isActive}}Close Gate{{else}}Open Gate{{/if}}</span>
             </button>
           </div>
         </div>
@@ -97,10 +97,10 @@
         <div class="hub-panel users-panel">
           <div class="panel-header">
             <h3><i class="fas fa-users"></i> Connected Users</h3>
-            <span class="panel-badge">{{connectedUsers.length}} online</span>
+            <span class="panel-badge">{{../connectedUsers.length}} online</span>
           </div>
           <div class="users-list" id="connected-users-list">
-            {{#each connectedUsers}}
+            {{#each ../connectedUsers}}
             <div class="user-item {{#if this.isGM}}gm{{/if}} {{#if this.viewingGateway}}viewing{{/if}}">
               <img src="{{this.avatar}}" alt="" class="user-avatar" />
               <div class="user-info">
@@ -127,7 +127,7 @@
             </button>
           </div>
           <div class="activity-feed" id="activity-feed">
-            {{#each activityFeed}}
+            {{#each ../activityFeed}}
             <div class="activity-item {{this.type}}">
               <div class="activity-icon">
                 <i class="fas {{this.icon}}"></i>
@@ -152,7 +152,7 @@
             </button>
           </div>
           <div class="presets-list" id="presets-list">
-            {{#each presets}}
+            {{#each ../presets}}
             <div class="preset-item" data-preset-id="{{this.id}}">
               <div class="preset-preview" style="background: {{this.theme.accent}}"></div>
               <div class="preset-info">
@@ -181,10 +181,10 @@
             <h3><i class="fas fa-comment-alt"></i> Welcome Message</h3>
           </div>
           <div class="form-group">
-            <textarea id="custom-message" class="message-input" placeholder="Enter a custom welcome message for players waiting in the gateway...">{{customMessage}}</textarea>
+            <textarea id="custom-message" class="message-input" placeholder="Enter a custom welcome message for players waiting in the gateway...">{{../customMessage}}</textarea>
           </div>
           <div class="panel-footer">
-            <span class="char-count"><span id="message-char-count">{{customMessage.length}}</span> / 500</span>
+            <span class="char-count"><span id="message-char-count">{{../customMessage.length}}</span> / 500</span>
             <button type="button" id="save-message" class="hub-btn hub-btn-primary">
               <i class="fas fa-save"></i> Update Message
             </button>
@@ -206,14 +206,14 @@
             <h3><i class="fas fa-swatchbook"></i> Theme</h3>
           </div>
           <div class="theme-grid">
-            {{#each themes}}
-            <button type="button" class="theme-card {{#if (gateway_eq this.id ../currentTheme)}}active{{/if}}" data-theme="{{this.id}}">
+            {{#each ../themes}}
+            <button type="button" class="theme-card {{#if (gateway_eq this.id ../../currentTheme)}}active{{/if}}" data-theme="{{this.id}}">
               <div class="theme-preview">
                 <div class="theme-gradient" style="background: linear-gradient(135deg, {{this.accent}}, {{this.secondary}})"></div>
                 <div class="theme-glow" style="box-shadow: 0 0 30px {{this.glow}}"></div>
               </div>
               <span class="theme-name">{{this.label}}</span>
-              {{#if (gateway_eq this.id ../currentTheme)}}<i class="fas fa-check theme-check"></i>{{/if}}
+              {{#if (gateway_eq this.id ../../currentTheme)}}<i class="fas fa-check theme-check"></i>{{/if}}
             </button>
             {{/each}}
           </div>
@@ -228,11 +228,11 @@
           <div class="control-group">
             <div class="control-header">
               <label for="opacity-slider">Overlay Darkness</label>
-              <span class="control-value" id="opacity-value">{{appearance.overlayOpacity}}</span>
+              <span class="control-value" id="opacity-value">{{../appearance.overlayOpacity}}</span>
             </div>
             <div class="slider-container">
               <i class="fas fa-sun slider-icon"></i>
-              <input type="range" id="opacity-slider" min="0.5" max="1" step="0.05" value="{{appearance.overlayOpacity}}">
+              <input type="range" id="opacity-slider" min="0.5" max="1" step="0.05" value="{{../appearance.overlayOpacity}}">
               <i class="fas fa-moon slider-icon"></i>
             </div>
           </div>
@@ -240,11 +240,11 @@
           <div class="control-group">
             <div class="control-header">
               <label for="blur-slider">Background Blur</label>
-              <span class="control-value" id="blur-value">{{appearance.blurStrength}}px</span>
+              <span class="control-value" id="blur-value">{{../appearance.blurStrength}}px</span>
             </div>
             <div class="slider-container">
               <i class="fas fa-eye slider-icon"></i>
-              <input type="range" id="blur-slider" min="0" max="40" step="2" value="{{appearance.blurStrength}}">
+              <input type="range" id="blur-slider" min="0" max="40" step="2" value="{{../appearance.blurStrength}}">
               <i class="fas fa-eye-slash slider-icon"></i>
             </div>
           </div>
@@ -252,18 +252,18 @@
           <div class="control-group">
             <div class="control-header">
               <label for="particle-slider">Particle Density</label>
-              <span class="control-value" id="particle-value">{{appearance.particleCount}}</span>
+              <span class="control-value" id="particle-value">{{../appearance.particleCount}}</span>
             </div>
             <div class="slider-container">
               <i class="fas fa-wind slider-icon"></i>
-              <input type="range" id="particle-slider" min="0" max="100" step="5" value="{{appearance.particleCount}}">
+              <input type="range" id="particle-slider" min="0" max="100" step="5" value="{{../appearance.particleCount}}">
               <i class="fas fa-snowflake slider-icon"></i>
             </div>
           </div>
 
           <div class="control-group toggle-group">
             <label class="toggle-label">
-              <input type="checkbox" id="animations-toggle" {{#if appearance.animationsEnabled}}checked{{/if}}>
+              <input type="checkbox" id="animations-toggle" {{#if ../appearance.animationsEnabled}}checked{{/if}}>
               <span class="toggle-switch"></span>
               <span class="toggle-text">Enable Animations</span>
             </label>
@@ -277,8 +277,8 @@
           </div>
           <div class="background-preview-container">
             <div class="background-preview" id="background-preview">
-              {{#if backgroundImage}}
-              <img src="{{backgroundImage}}" alt="Background Preview" />
+              {{#if ../backgroundImage}}
+              <img src="{{../backgroundImage}}" alt="Background Preview" />
               {{else}}
               <div class="no-preview">
                 <i class="fas fa-image"></i>
@@ -288,7 +288,7 @@
             </div>
             <div class="background-controls">
               <div class="form-group">
-                <input type="text" id="background-image" value="{{backgroundImage}}" placeholder="Path to background image...">
+                <input type="text" id="background-image" value="{{../backgroundImage}}" placeholder="Path to background image...">
               </div>
               <div class="button-group">
                 <button type="button" id="browse-background" class="hub-btn hub-btn-secondary">
@@ -312,7 +312,7 @@
     <div class="tab {{#if this.active}}active{{/if}}" data-group="primary" data-tab="countdown">
       <div class="tab-grid">
         {{!-- Active Countdown Display --}}
-        {{#if countdown.isActive}}
+        {{#if ../countdown.isActive}}
         <div class="hub-panel countdown-active-panel span-2">
           <div class="countdown-display">
             <div class="countdown-ring" id="countdown-ring">
@@ -323,7 +323,7 @@
               <div class="countdown-time" id="hub-countdown-time">--:--</div>
             </div>
             <div class="countdown-info">
-              <span class="countdown-label">{{countdown.message}}</span>
+              <span class="countdown-label">{{../countdown.message}}</span>
               <div class="countdown-actions">
                 <button type="button" id="add-time-1" class="hub-btn hub-btn-ghost">
                   <i class="fas fa-plus"></i> 1 min
@@ -441,13 +441,13 @@
             <input type="text" id="chat-search" placeholder="Search messages..." class="chat-search-input">
             <select id="chat-filter-user" class="chat-filter-select">
               <option value="">All Users</option>
-              {{#each connectedUsers}}
+              {{#each ../connectedUsers}}
               <option value="{{this.id}}">{{this.name}}</option>
               {{/each}}
             </select>
           </div>
           <div class="chat-messages-container" id="chat-messages-container">
-            {{#each chat}}
+            {{#each ../chat}}
             <div class="chat-message {{#if this.isGM}}gm{{/if}} {{#if this.isSystem}}system{{/if}}" data-user-id="{{this.userId}}">
               <img src="{{this.avatar}}" alt="" class="chat-avatar" />
               <div class="chat-content">
@@ -551,16 +551,16 @@
     {{#with (lookup tabs "polls")}}
     <div class="tab {{#if this.active}}active{{/if}}" data-group="primary" data-tab="polls">
       <div class="tab-grid">
-        {{#if poll.active}}
+        {{#if ../poll.active}}
         {{!-- Active Poll Display --}}
         <div class="hub-panel active-poll-panel span-2">
           <div class="panel-header">
             <h3><i class="fas fa-poll"></i> Live Poll</h3>
             <span class="live-indicator"><span class="pulse"></span> LIVE</span>
           </div>
-          <div class="poll-question">{{poll.question}}</div>
+          <div class="poll-question">{{../poll.question}}</div>
           <div class="poll-results">
-            {{#each poll.options}}
+            {{#each ../poll.options}}
             <div class="poll-result-item">
               <div class="poll-result-header">
                 <span class="poll-option-text">{{this.text}}</span>
@@ -578,8 +578,8 @@
             {{/each}}
           </div>
           <div class="poll-summary">
-            <span class="poll-total"><i class="fas fa-users"></i> {{poll.totalVotes}} total votes</span>
-            <span class="poll-participation"><i class="fas fa-percentage"></i> {{poll.participationRate}}% participation</span>
+            <span class="poll-total"><i class="fas fa-users"></i> {{../poll.totalVotes}} total votes</span>
+            <span class="poll-participation"><i class="fas fa-percentage"></i> {{../poll.participationRate}}% participation</span>
           </div>
           <div class="poll-actions">
             <button type="button" id="close-poll" class="hub-btn hub-btn-danger">
@@ -698,7 +698,7 @@
               <span class="stat-label">Total Gateway Time</span>
             </div>
             <div class="analytics-stat">
-              <span class="stat-big-value">{{analytics.avgSessionLength}}</span>
+              <span class="stat-big-value">{{../analytics.avgSessionLength}}</span>
               <span class="stat-label">Avg. Session</span>
             </div>
           </div>
@@ -711,7 +711,7 @@
           </div>
           <div class="usage-graph" id="usage-graph">
             <div class="graph-bars">
-              {{#each analytics.weeklyUsage}}
+              {{#each ../analytics.weeklyUsage}}
               <div class="graph-bar-container">
                 <div class="graph-bar" style="height: {{this.percentage}}%" title="{{this.label}}: {{this.value}} sessions"></div>
                 <span class="graph-label">{{this.day}}</span>
@@ -730,7 +730,7 @@
             </button>
           </div>
           <div class="sessions-list">
-            {{#each analytics.recentSessions}}
+            {{#each ../analytics.recentSessions}}
             <div class="session-item">
               <div class="session-date">
                 <span class="session-day">{{this.dayOfWeek}}</span>
@@ -763,23 +763,23 @@
             <div class="feature-bar-item">
               <span class="feature-name"><i class="fas fa-comments"></i> Chat</span>
               <div class="feature-bar-track">
-                <div class="feature-bar-fill" style="width: {{analytics.featureUsage.chat}}%"></div>
+                <div class="feature-bar-fill" style="width: {{../analytics.featureUsage.chat}}%"></div>
               </div>
-              <span class="feature-percentage">{{analytics.featureUsage.chat}}%</span>
+              <span class="feature-percentage">{{../analytics.featureUsage.chat}}%</span>
             </div>
             <div class="feature-bar-item">
               <span class="feature-name"><i class="fas fa-poll"></i> Polls</span>
               <div class="feature-bar-track">
-                <div class="feature-bar-fill" style="width: {{analytics.featureUsage.polls}}%"></div>
+                <div class="feature-bar-fill" style="width: {{../analytics.featureUsage.polls}}%"></div>
               </div>
-              <span class="feature-percentage">{{analytics.featureUsage.polls}}%</span>
+              <span class="feature-percentage">{{../analytics.featureUsage.polls}}%</span>
             </div>
             <div class="feature-bar-item">
               <span class="feature-name"><i class="fas fa-clock"></i> Countdown</span>
               <div class="feature-bar-track">
-                <div class="feature-bar-fill" style="width: {{analytics.featureUsage.countdown}}%"></div>
+                <div class="feature-bar-fill" style="width: {{../analytics.featureUsage.countdown}}%"></div>
               </div>
-              <span class="feature-percentage">{{analytics.featureUsage.countdown}}%</span>
+              <span class="feature-percentage">{{../analytics.featureUsage.countdown}}%</span>
             </div>
           </div>
         </div>

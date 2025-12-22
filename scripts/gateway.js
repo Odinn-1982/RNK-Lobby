@@ -27,24 +27,24 @@ const MODULE_TITLE = "RNK Gateway";
 // ════════════════════════════════════════════════════════════════════════════════
 
 // ════════════════════════════════════════════════════════════════════════════════
-// LAZY LOADING INITIALIZATION
+// INITIALIZATION
 // ════════════════════════════════════════════════════════════════════════════════
 
 let _gatewayInitialized = false;
 
-function initializeGatewayIfNeeded() {
+function initializeGateway() {
   if (_gatewayInitialized) return;
   _gatewayInitialized = true;
   
-  console.log(`${MODULE_TITLE} | 🚀 Lazy loading on first use...`);
+  console.log(`${MODULE_TITLE} | 🚀 Initializing...`);
   
-  // Perform all initialization NOW
+  // Perform all initialization
   RNKGateway.registerSettings();
   RNKGateway.registerHelpers();
   RNKGateway.loadState();
   RNKGateway.setupSocket();
   
-  // Register hooks NOW (not at module load)
+  // Register hooks
   Hooks.on("renderSidebar", () => {
     if (game.user?.isGM) {
       setTimeout(() => RNKGateway.addSidebarButton(), 100);
@@ -54,12 +54,25 @@ function initializeGatewayIfNeeded() {
   Hooks.on("userConnected", () => RNKGateway.updatePlayersDisplay());
   Hooks.on("userDisconnected", () => RNKGateway.updatePlayersDisplay());
   
+  // Listen for Cyphur messages
+  Hooks.on("RNKCyphurMessageReceived", (message) => RNKGateway.handleCyphurMessage(message));
+
   // Expose API
   const module = game.modules.get(MODULE_ID);
   if (module) module.api = RNKGateway;
   globalThis.RNKGateway = RNKGateway;
+
+  // Check active state
+  if (RNKGateway.state.isActive) {
+    RNKGateway.onGatewayToggle(true, { source: "init" });
+  }
+
+  // Request state sync if not GM
+  if (!game.user.isGM) {
+    setTimeout(() => RNKGateway.requestState(), 1000);
+  }
   
-  console.log(`${MODULE_TITLE} | ✅ Lazy initialization complete`);
+  console.log(`${MODULE_TITLE} | ✅ Initialization complete`);
 }
 
 // Register with RNK Codex immediately (before hooks fire)
@@ -73,12 +86,13 @@ globalThis.RNK_MODULES.push({
   order: 5,
   quantumPortal: true,
   onClick: () => {
-    // Lazy load on first click
-    initializeGatewayIfNeeded();
     RNKGateway.openControlHub();
   }
 });
-console.log(`${MODULE_TITLE} | Registered with RNK Codex (Column B) - Lazy Loading Enabled`);
+console.log(`${MODULE_TITLE} | Registered with RNK Codex (Column B)`);
+
+// Initialize on ready
+Hooks.once("ready", () => initializeGateway());
 
 // ════════════════════════════════════════════════════════════════════════════════
 // CONSTANTS & CONFIGURATION
@@ -265,18 +279,6 @@ class RNKGateway {
   // NOTE: These methods are NO LONGER called at module load.
   // All initialization is deferred until first use via initializeGatewayIfNeeded()
   
-  // ──────────────────────────────────────────────────────────────────────────────
-  // SETTINGS REGISTRATION
-  // ──────────────────────────────────────────────────────────────────────────────
-  
-  static registerSettings() {
-    // Gateway Active
-    game.settings.register(MODULE_ID, SETTINGS.GATEWAY_ACTIVE, {
-    
-    // Register keyboard handler
-    document.addEventListener("keydown", RNKGateway.onKeyDown, true);
-  }
-
   // ──────────────────────────────────────────────────────────────────────────────
   // SETTINGS REGISTRATION
   // ──────────────────────────────────────────────────────────────────────────────
@@ -641,8 +643,13 @@ class RNKGateway {
 
     // Show/hide overlay
     if (isActive) {
-      const gmPreview = game.user.isGM && game.settings.get(MODULE_ID, SETTINGS.GM_PREVIEW);
-      if (!game.user.isGM || gmPreview) {
+      // GM Bypass Logic:
+      // If user is GM, only show if GM Preview setting is enabled.
+      // If user is NOT GM, always show.
+      const isGM = game.user.isGM;
+      const gmPreview = game.settings.get(MODULE_ID, SETTINGS.GM_PREVIEW);
+      
+      if (!isGM || gmPreview) {
         RNKGateway.showOverlay();
       }
       RNKGateway.updateGMIndicator(true);
@@ -676,6 +683,9 @@ class RNKGateway {
 
   static showOverlay() {
     if (RNKGateway.overlayElement) return;
+
+    // Double check GM bypass just in case called directly
+    if (game.user.isGM && !game.settings.get(MODULE_ID, SETTINGS.GM_PREVIEW)) return;
 
     const overlay = RNKGateway.createOverlayElement();
     document.body.appendChild(overlay);
@@ -734,62 +744,53 @@ class RNKGateway {
 
       <!-- Main Container -->
       <div class="gateway-container">
-        <!-- Header -->
-        <header class="gateway-header">
-          <div class="gateway-logo">
-            <span class="gateway-logo-icon">⬡</span>
-            <h1 class="gateway-title">${game.i18n.localize("GATEWAY.UI.Title")}</h1>
+        
+        <!-- Compact Header Banner -->
+        <header class="gateway-banner">
+          <div class="gateway-banner-left">
+            <div class="gateway-logo-small">
+              <span class="gateway-logo-icon-small">⬡</span>
+              <span class="gateway-title-small">${game.i18n.localize("GATEWAY.UI.Title")}</span>
+            </div>
           </div>
-          <p class="gateway-subtitle">${game.i18n.localize("GATEWAY.UI.Subtitle")}</p>
+
+          <div class="gateway-banner-center">
+            <div class="gateway-status-compact">
+              <span class="gateway-status-dot"></span>
+              <span class="gateway-status-text">${game.i18n.localize("GATEWAY.UI.Maintenance")}</span>
+            </div>
+            <div class="gateway-countdown-compact" id="gateway-countdown">
+               <span id="gateway-countdown-time">--:--</span>
+            </div>
+            <div class="gateway-message-compact" id="gateway-message">${message}</div>
+          </div>
+
+          <div class="gateway-banner-right">
+             <div class="gateway-user-compact">
+                <img class="gateway-user-avatar" id="gateway-character-avatar" src="icons/svg/mystery-man.svg" alt="" />
+                <span class="gateway-user-name" id="gateway-character-name">${game.user.name}</span>
+             </div>
+          </div>
         </header>
 
-        <!-- Main Content Grid -->
-        <div class="gateway-content">
-          <!-- Left Panel: Status & Info -->
-          <section class="gateway-panel gateway-status-panel">
-            <div class="gateway-status-card">
-              <div class="gateway-status-indicator">
-                <span class="gateway-status-dot"></span>
-                <span class="gateway-status-label">${game.i18n.localize("GATEWAY.UI.ServerStatus")}</span>
+        <!-- Main Content Area -->
+        <div class="gateway-main-area">
+          
+          <!-- Poll Section (Hidden by default) -->
+          <div class="gateway-poll-wrapper hidden" id="gateway-poll-wrapper">
+            <section class="gateway-panel gateway-poll-panel" id="gateway-poll-panel">
+              <h2 class="gateway-panel-title">
+                <i class="fas fa-poll"></i>
+                ${game.i18n.localize("GATEWAY.UI.Poll.Title")}
+              </h2>
+              <div class="gateway-poll-content" id="gateway-poll-content">
+                <p class="gateway-poll-empty">${game.i18n.localize("GATEWAY.UI.Poll.NoActive")}</p>
               </div>
-              <span class="gateway-status-value">${game.i18n.localize("GATEWAY.UI.Maintenance")}</span>
-            </div>
+            </section>
+          </div>
 
-            <div class="gateway-countdown-card" id="gateway-countdown">
-              <div class="gateway-countdown-label">${game.i18n.localize("GATEWAY.UI.EstimatedTime")}</div>
-              <div class="gateway-countdown-time" id="gateway-countdown-time">--:--</div>
-              <div class="gateway-countdown-progress" id="gateway-countdown-progress">
-                <div class="gateway-countdown-bar" id="gateway-countdown-bar"></div>
-              </div>
-            </div>
-
-            <div class="gateway-message-card">
-              <p class="gateway-message" id="gateway-message">${message}</p>
-            </div>
-
-            <!-- Character Card -->
-            <div class="gateway-character-card" id="gateway-character">
-              <img class="gateway-character-avatar" id="gateway-character-avatar" src="icons/svg/mystery-man.svg" alt="" />
-              <div class="gateway-character-info">
-                <span class="gateway-character-name" id="gateway-character-name">${game.user.name}</span>
-                <span class="gateway-character-role" id="gateway-character-role">Player</span>
-              </div>
-            </div>
-          </section>
-
-          <!-- Center Panel: Poll -->
-          <section class="gateway-panel gateway-poll-panel" id="gateway-poll-panel">
-            <h2 class="gateway-panel-title">
-              <i class="fas fa-poll"></i>
-              ${game.i18n.localize("GATEWAY.UI.Poll.Title")}
-            </h2>
-            <div class="gateway-poll-content" id="gateway-poll-content">
-              <p class="gateway-poll-empty">${game.i18n.localize("GATEWAY.UI.Poll.NoActive")}</p>
-            </div>
-          </section>
-
-          <!-- Right Panel: Chat -->
-          <section class="gateway-panel gateway-chat-panel">
+          <!-- Chat Section (Centered & Fading) -->
+          <section class="gateway-panel gateway-chat-panel centered-chat" id="gateway-chat-panel">
             <h2 class="gateway-panel-title">
               <i class="fas fa-comments"></i>
               Gateway Chat
@@ -809,9 +810,10 @@ class RNKGateway {
               </button>
             </form>
           </section>
+
         </div>
 
-        <!-- Players Online -->
+        <!-- Players Online Footer -->
         <footer class="gateway-footer">
           <div class="gateway-players" id="gateway-players">
             <span class="gateway-players-label">${game.i18n.localize("GATEWAY.UI.Players.Title")}:</span>
@@ -1065,10 +1067,66 @@ class RNKGateway {
       isGM: game.user.isGM
     };
 
+    // Cyphur Integration: Route to GMs if active
+    if (globalThis.RNKCyphur && game.modules.get("rnk-cyphur")?.active) {
+      console.log("RNK Gateway: Cyphur detected, attempting to route message...");
+      // Ensure Cyphur is initialized
+      if (globalThis.RNKCyphur.ensureInitialized) {
+        globalThis.RNKCyphur.ensureInitialized().then(() => {
+          // If user is not GM, send PM to all GMs
+          if (!game.user.isGM) {
+            const gms = game.users.filter(u => u.isGM && u.active);
+            console.log(`RNK Gateway: Routing to ${gms.length} GMs via Cyphur`);
+            gms.forEach(gm => {
+              RNKCyphur.sendMessage(gm.id, content);
+            });
+          }
+        });
+      } else {
+        // Fallback if ensureInitialized is not available (older version?)
+        if (!game.user.isGM) {
+          const gms = game.users.filter(u => u.isGM && u.active);
+          console.log(`RNK Gateway: Routing to ${gms.length} GMs via Cyphur (Fallback)`);
+          gms.forEach(gm => {
+            RNKCyphur.sendMessage(gm.id, content);
+          });
+        }
+      }
+    } else {
+        console.log("RNK Gateway: Cyphur not active or not found.");
+    }
+
     if (game.user.isGM) {
       RNKGateway.processChatMessage(message);
     } else {
       RNKGateway.emit(SOCKET_EVENTS.CHAT_SEND, { message });
+    }
+  }
+
+  static handleCyphurMessage(message) {
+    // Only process if Gateway is active
+    if (!RNKGateway.state.isActive) return;
+
+    console.log("RNK Gateway: Received Cyphur message hook", message);
+
+    // If message is from GM and we are a player, show it in Gateway Chat
+    // Or if we are GM and we sent it (via Cyphur UI), we might want to see it too?
+    
+    // Check if sender is GM
+    const sender = game.users.get(message.senderId);
+    if (sender && sender.isGM) {
+        // Convert Cyphur message to Gateway message format
+        const gatewayMessage = {
+            id: message.id || foundry.utils.randomID(),
+            userId: message.senderId,
+            author: message.senderName,
+            avatar: message.senderImg,
+            content: message.messageContent,
+            timestamp: message.timestamp,
+            isGM: true
+        };
+        
+        RNKGateway.receiveChatMessage(gatewayMessage);
     }
   }
 
@@ -1095,6 +1153,7 @@ class RNKGateway {
     
     // Update control hub chat monitor
     if (RNKGateway.apps.hub?.rendered) {
+      console.log("Gateway: Updating Control Hub chat display");
       RNKGateway.apps.hub.render(false);
     }
   }
@@ -1103,6 +1162,7 @@ class RNKGateway {
     if (!RNKGateway.overlayElement) return;
 
     const container = RNKGateway.overlayElement.querySelector("#gateway-chat-messages");
+    const panel = RNKGateway.overlayElement.querySelector("#gateway-chat-panel");
     if (!container) return;
 
     container.innerHTML = RNKGateway.state.chat.map(msg => `
@@ -1116,6 +1176,19 @@ class RNKGateway {
     `).join("");
 
     container.scrollTop = container.scrollHeight;
+
+    // Trigger fade effect
+    if (panel) {
+        panel.classList.add("active");
+        
+        // Clear existing timeout if any
+        if (RNKGateway._chatFadeTimeout) clearTimeout(RNKGateway._chatFadeTimeout);
+        
+        // Set new timeout to remove active class
+        RNKGateway._chatFadeTimeout = setTimeout(() => {
+            panel.classList.remove("active");
+        }, 5000);
+    }
   }
 
   static async clearChat(options = { broadcast: true }) {
@@ -1243,18 +1316,19 @@ class RNKGateway {
   static updatePollDisplay() {
     if (!RNKGateway.overlayElement) return;
 
+    const wrapper = RNKGateway.overlayElement.querySelector("#gateway-poll-wrapper");
     const container = RNKGateway.overlayElement.querySelector("#gateway-poll-content");
-    if (!container) return;
+    if (!container || !wrapper) return;
 
     const { poll } = RNKGateway.state;
 
     if (!poll.active) {
-      container.innerHTML = `
-        <p class="gateway-poll-empty">${game.i18n.localize("GATEWAY.UI.Poll.NoActive")}</p>
-        <p class="gateway-poll-waiting">${game.i18n.localize("GATEWAY.UI.Poll.Waiting")}</p>
-      `;
+      wrapper.classList.add("hidden");
+      container.innerHTML = "";
       return;
     }
+
+    wrapper.classList.remove("hidden");
 
     const totalVotes = poll.options.reduce((sum, opt) => sum + (opt.votes || 0), 0);
     const userVote = poll.responses[game.user.id];
@@ -1972,10 +2046,6 @@ class GatewayControlHub extends foundry.applications.api.HandlebarsApplicationMi
       throw error;
     }
   }
-    
-    console.log("Gateway Control Hub - Returning data:", data);
-    return data;
-  }
 
   async close(options = {}) {
     // Clear timers
@@ -1995,9 +2065,6 @@ class GatewayControlHub extends foundry.applications.api.HandlebarsApplicationMi
     super._onRender(context, options);
     const html = $(this.element);
     
-    // Remove all existing event handlers to prevent duplicates
-    html.find("*").off();
-
     // ══════════════════════════════════════════════════════════════════════════
     // HEADER & POWER CONTROLS
     // ══════════════════════════════════════════════════════════════════════════
@@ -2445,7 +2512,9 @@ class GatewayControlHub extends foundry.applications.api.HandlebarsApplicationMi
 
       if (remaining <= 0) {
         clearInterval(this._countdownTimerInterval);
-        this.render(false);
+        this._countdownTimerInterval = null;
+        // Don't call render here - it causes infinite loops
+        // The countdown completion is already handled by RNKGateway.stopCountdown()
       }
     };
 
@@ -2486,8 +2555,8 @@ class GatewayControlHub extends foundry.applications.api.HandlebarsApplicationMi
 // HOOKS REGISTRATION
 // ════════════════════════════════════════════════════════════════════════════════
 
-Hooks.once("init", () => RNKGateway.init());
-Hooks.once("ready", () => RNKGateway.ready());
+// Hooks.once("init", () => RNKGateway.init());
+// Hooks.once("ready", () => RNKGateway.ready());
 
 // Re-add sidebar button when sidebar renders
 Hooks.on("renderSidebar", () => {
@@ -2497,10 +2566,17 @@ Hooks.on("renderSidebar", () => {
 });
 
 // Update players display when users change
-HooLAZY LOADING - NO HOOKS AT MODULE LOAD
+Hooks.on("updateUser", () => {
+  if (RNKGateway.app?.rendered) {
+    RNKGateway.app.render(false);
+  }
+});
+
 // ════════════════════════════════════════════════════════════════════════════════
-// All hooks are registered inside initializeGatewayIfNeeded() when first triggered
-// This prevents unnecessary initialization if Gateway is never used{
+// MODULE REGISTRATION FUNCTION
+// ════════════════════════════════════════════════════════════════════════════════
+
+function registerRNKModule(config) {
   if (!config?.id || typeof config.onClick !== 'function') {
     console.warn('RNK Gateway | Invalid RNK module registration', config);
     return false;
