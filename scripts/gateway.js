@@ -61,6 +61,7 @@ function initializeGateway() {
   const module = game.modules.get(MODULE_ID);
   if (module) module.api = RNKGateway;
   globalThis.RNKGateway = RNKGateway;
+  globalThis.RNKGateway.isInitialized = true;
 
   // Check active state
   if (RNKGateway.state.isActive) {
@@ -73,6 +74,7 @@ function initializeGateway() {
   }
   
   console.log(`${MODULE_TITLE} | ✅ Initialization complete`);
+  ui.notifications.info(`${MODULE_TITLE} Activated`);
 }
 
 // Register with RNK Codex immediately (before hooks fire)
@@ -86,13 +88,17 @@ globalThis.RNK_MODULES.push({
   order: 5,
   quantumPortal: true,
   onClick: () => {
+    // Lazy load / Activate on click
+    if (!globalThis.RNKGateway?.isInitialized) {
+        initializeGateway();
+    }
     RNKGateway.openControlHub();
   }
 });
 console.log(`${MODULE_TITLE} | Registered with RNK Codex (Column B)`);
 
 // Initialize on ready
-Hooks.once("ready", () => initializeGateway());
+// Hooks.once("ready", () => initializeGateway());
 
 // ════════════════════════════════════════════════════════════════════════════════
 // CONSTANTS & CONFIGURATION
